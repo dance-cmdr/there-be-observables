@@ -1,0 +1,11 @@
+{
+  "name": "there-be-observables",
+  "version": "1.0.0",
+  "description": "Code for article",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "dance-cmdr",
+  "license": "ISC"
+}
