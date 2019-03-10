@@ -4,8 +4,42 @@
   "description": "Code for article",
   "main": "index.js",
   "scripts": {
-    "test": "npm test"
+    "test": "jest",
+    "lint": "./node_modules/.bin/eslint",
+    "check-types": "tsc",
+    "build": "webpack"
   },
   "author": "dance-cmdr",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/preset-typescript": "^7.3.3",
+    "@types/jest": "^24.0.11",
+    "@typescript-eslint/eslint-plugin": "^1.4.2",
+    "@typescript-eslint/parser": "^1.4.2",
+    "awesome-typescript-loader": "^5.2.1",
+    "babel-jest": "^24.3.1",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^5.0.0",
+    "eslint": "^5.15.1",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "husky": "^1.3.1",
+    "jest": "^24.3.1",
+    "prettier": "^1.16.4",
+    "source-map-loader": "^0.2.4",
+    "typescript": "^3.3.3333",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "rxjs": "^6.4.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint && npm test",
+      "pre-push": "npm run lint && npm test"
+    }
+  }
 }
