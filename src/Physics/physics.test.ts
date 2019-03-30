@@ -1,4 +1,11 @@
-import { normaliseDeg, velocityChangeY, axisEfficiencyModifier } from './physics';
+import {
+  normaliseDeg,
+  velocityChangeY,
+  axisEfficiencyModifier,
+  acceleration,
+  applyVelocities,
+  netForce,
+} from './physics';
 
 describe('normaliseDeg', () => {
   it('should return 0', () => {
@@ -88,6 +95,66 @@ describe('momentumChangeY', () => {
     it('should add force to y', () => {
       expect(velocityChangeY(1, 10, 180)).toEqual(-9);
       expect(velocityChangeY(1, 10, -180)).toEqual(-9);
+    });
+  });
+});
+
+describe.skip('acceleration', () => {
+  it('should throw', () => {
+    expect(acceleration(0, 0)).toThrow(Infinity);
+  });
+
+  it('should return infinity', () => {
+    expect(acceleration(1, 0)).toBe(Infinity);
+  });
+
+  it('should return 1', () => {
+    expect(acceleration(1, 1)).toBe(1);
+  });
+
+  it('should return 2', () => {
+    expect(acceleration(2, 1)).toBe(1);
+  });
+
+  it('should return 2', () => {
+    expect(acceleration(1, 2)).toBe(0.5);
+  });
+});
+
+describe('netForce', () => {
+  it('calulates', () => {
+    expect(
+      netForce(
+        {
+          magnitude: 9,
+          direction: 0,
+        },
+        {
+          magnitude: 14,
+          direction: 45,
+        },
+      ),
+    ).toEqual({
+      magnitude: 21.3,
+      direction: 28,
+    });
+  });
+
+  it('calulates too', () => {
+    expect(
+      netForce(
+        {
+          magnitude: 10,
+          direction: 0,
+        },
+        {
+          magnitude: 10,
+          direction: 180,
+        },
+      ),
+    ).toEqual({
+      magnitude: 0,
+      direction: 90,
     });
   });
 });
