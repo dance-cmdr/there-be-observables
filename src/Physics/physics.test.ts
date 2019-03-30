@@ -1,4 +1,4 @@
-import { normaliseDeg, applyThurst, momentumChangeY, axisEfficiencyModifier } from './physics';
+import { normaliseDeg, velocityChangeY, axisEfficiencyModifier } from './physics';
 
 describe('normaliseDeg', () => {
   it('should return 0', () => {
@@ -49,51 +49,45 @@ describe('axisEfficiencyModifier', () => {
   });
 });
 
-describe.skip('momentumChangeY', () => {
+describe('momentumChangeY', () => {
   describe('angle is 0 degrees from N', () => {
     it('should add force to y', () => {
-      expect(momentumChangeY(10, 1, 0)).toEqual(11);
+      expect(velocityChangeY(1, 10, 0)).toEqual(11);
     });
 
     it('should consider 0 === 360', () => {
-      expect(momentumChangeY(10, 1, 360)).toEqual(11);
+      expect(velocityChangeY(1, 10, 360)).toEqual(11);
     });
   });
 
   describe('angle is 45 degrees from N', () => {
     it('should add force to y', () => {
-      expect(momentumChangeY(10, 1, 45)).toEqual(6);
-      expect(momentumChangeY(10, 1, -45)).toEqual(6);
-      expect(momentumChangeY(10, 1, 315)).toEqual(6);
+      expect(velocityChangeY(1, 10, 45)).toEqual(6);
+      expect(velocityChangeY(1, 10, -45)).toEqual(6);
+      expect(velocityChangeY(1, 10, 315)).toEqual(6);
     });
   });
 
   describe('angle is 90 degrees from N', () => {
     it('should add force to y', () => {
-      expect(momentumChangeY(10, 1, 90)).toEqual(1);
-      expect(momentumChangeY(10, 1, -90)).toEqual(1);
-      expect(momentumChangeY(10, 1, 270)).toEqual(1);
+      expect(velocityChangeY(1, 10, 90)).toEqual(1);
+      expect(velocityChangeY(1, 10, -90)).toEqual(1);
+      expect(velocityChangeY(1, 10, 270)).toEqual(1);
     });
   });
 
   describe('angle is 135 degrees from N', () => {
     it('should add force to y', () => {
-      expect(momentumChangeY(10, 1, 135)).toEqual(-4);
-      expect(momentumChangeY(10, 1, -135)).toEqual(-4);
-      expect(momentumChangeY(10, 1, 225)).toEqual(-4);
+      expect(velocityChangeY(1, 10, 135)).toEqual(-4);
+      expect(velocityChangeY(1, 10, -135)).toEqual(-4);
+      expect(velocityChangeY(1, 10, 225)).toEqual(-4);
     });
   });
 
   describe('angle is 180 degrees from N', () => {
     it('should add force to y', () => {
-      expect(momentumChangeY(10, 1, 180)).toEqual(-4);
-      expect(momentumChangeY(10, 1, -180)).toEqual(-4);
+      expect(velocityChangeY(1, 10, 180)).toEqual(-9);
+      expect(velocityChangeY(1, 10, -180)).toEqual(-9);
     });
-  });
-});
-
-describe.skip('applyThurst', () => {
-  it('should apply thrust to momentum skywards', () => {
-    expect(applyThurst(10, { x: 1, y: 1, angle: 0 })).toEqual({ x: 1, y: 11, angle: 0 });
   });
 });

@@ -1,7 +1,20 @@
-export interface SOPosition {
+import { Observable } from 'rxjs';
+
+export interface PhPosition {
   x: number;
   y: number;
   angle: number;
+}
+
+export interface PhVelocity {
+  speed: number;
+  angle: number;
+}
+
+export interface PhObject {
+  mass: number;
+  position$: Observable<PhPosition>;
+  velocity$: Observable<PhVelocity>;
 }
 
 export function normaliseDeg(degrees: number): number {
@@ -22,12 +35,11 @@ export function axisEfficiencyModifier(dirA: number, dirB: number): number {
   return (a - b) / 90 + 1;
 }
 
-export function momentumChangeY(force: number, y: number, angle: number): number {
-  const angleMod = 180 / ((angle % 360) + 360 - 180);
-
-  return y + force / angleMod;
+export function forceForReferenceAngle(referenceAngle: number, forceAngle: number, force: number): number {
+  const modifier = axisEfficiencyModifier(referenceAngle, forceAngle);
+  return force * modifier;
 }
 
-export function applyThurst(thrust: number, momentum: SOPosition): SOPosition {
-  return { x: 0, y: 0, angle: 0 };
+export function velocityChangeY(y: number, force: number, forceAngle: number): number {
+  return y + forceForReferenceAngle(0, forceAngle, force);
 }
