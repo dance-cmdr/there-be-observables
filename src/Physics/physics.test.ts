@@ -1,11 +1,4 @@
-import {
-  normaliseDeg,
-  velocityChangeY,
-  axisEfficiencyModifier,
-  acceleration,
-  applyVelocities,
-  netForce,
-} from './physics';
+import { normaliseDeg, velocityChangeY, axisEfficiencyModifier, acceleration, netForce } from './physics';
 
 describe('normaliseDeg', () => {
   it('should return 0', () => {
@@ -56,7 +49,7 @@ describe('axisEfficiencyModifier', () => {
   });
 });
 
-describe('momentumChangeY', () => {
+describe('velocityChangeY', () => {
   describe('angle is 0 degrees from N', () => {
     it('should add force to y', () => {
       expect(velocityChangeY(1, 10, 0)).toEqual(11);

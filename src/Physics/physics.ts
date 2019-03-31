@@ -43,39 +43,35 @@ export function acceleration(force: PhForce, object: PhObject): PhVelocity {
   };
 }
 
+export function convertToVectorCoordinates(force: PhForce): PhPosition {
+  return {
+    x: force.magnitude * Math.cos(degreesToRadians(force.direction)),
+    y: force.magnitude * Math.sin(degreesToRadians(force.direction)),
+  };
+}
+
+export function addVectors(a: PhPosition, b: PhPosition): PhPosition {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y,
+  };
+}
+
+/***
+ * Calculating net force
+ * https://www.dummies.com/education/science/physics/calculating-net-force-and-acceleration/
+ * netDirection = tan^-1(y/x)
+ * Math.atan = tan^-1
+ */
 export function netForce(a: PhForce, b: PhForce): PhForce {
-  const Ax = a.magnitude * Math.cos(degreesToRadians(a.direction));
-  const Ay = a.magnitude * Math.sin(degreesToRadians(a.direction));
+  const { x, y } = addVectors(convertToVectorCoordinates(a), convertToVectorCoordinates(b));
 
-  const Bx = b.magnitude * Math.cos(degreesToRadians(b.direction));
-  const By = b.magnitude * Math.sin(degreesToRadians(b.direction));
-
-  const Xx = Ax + Bx;
-  const Xy = Ay + By;
-
-  const direction = Math.round(radiansToDegrees(Math.atan(Xy / Xx))); // tan-1(y/x)
-  const magnitude = Number(Math.sqrt(Math.pow(Xx, 2) + Math.pow(Xy, 2)).toFixed(1));
-
-  console.log({
-    Ax,
-    Ay,
-    Bx,
-    By,
-  });
+  const direction = Math.round(radiansToDegrees(Math.atan(y / x)));
+  const magnitude = Number(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)).toFixed(1));
 
   return {
     magnitude,
     direction,
-  };
-}
-
-export function applyAcceleration(acceleration: PhVelocity, velocity: PhVelocity): PhVelocity {
-  const netSpeed: Infinity;
-  const netDirection: Infinity;
-
-  return {
-    speed: netSpeed,
-    direction: netDirection,
   };
 }
 
