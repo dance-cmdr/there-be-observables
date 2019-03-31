@@ -36,9 +36,12 @@ export function radiansToDegrees(radians: number): number {
   return radians * (180 / Math.PI);
 }
 
-export function acceleration(force: PhForce, object: PhObject): PhVelocity {
+export function acceleration(force: PhForce, mass: number): PhVelocity {
+  if (!(mass > 0)) {
+    throw RangeError(`mass should be > 0. received ${mass}!`);
+  }
   return {
-    speed: force.magnitude / object.mass,
+    speed: force.magnitude / mass,
     direction: force.direction,
   };
 }

@@ -92,25 +92,84 @@ describe('velocityChangeY', () => {
   });
 });
 
-describe.skip('acceleration', () => {
+describe('acceleration', () => {
   it('should throw', () => {
-    expect(acceleration(0, 0)).toThrow(Infinity);
+    expect(acceleration).toThrow();
   });
 
   it('should return infinity', () => {
-    expect(acceleration(1, 0)).toBe(Infinity);
+    expect(
+      acceleration(
+        {
+          magnitude: 0,
+          direction: 0,
+        },
+        1,
+      ),
+    ).toEqual({
+      speed: 0,
+      direction: 0,
+    });
   });
 
   it('should return 1', () => {
-    expect(acceleration(1, 1)).toBe(1);
+    expect(
+      acceleration(
+        {
+          magnitude: 1,
+          direction: 0,
+        },
+        1,
+      ),
+    ).toEqual({
+      speed: 1,
+      direction: 0,
+    });
   });
 
   it('should return 2', () => {
-    expect(acceleration(2, 1)).toBe(1);
+    expect(
+      acceleration(
+        {
+          magnitude: 2,
+          direction: 0,
+        },
+        1,
+      ),
+    ).toEqual({
+      speed: 2,
+      direction: 0,
+    });
   });
 
-  it('should return 2', () => {
-    expect(acceleration(1, 2)).toBe(0.5);
+  it('should return 0.5', () => {
+    expect(
+      acceleration(
+        {
+          magnitude: 1,
+          direction: 0,
+        },
+        2,
+      ),
+    ).toEqual({
+      speed: 0.5,
+      direction: 0,
+    });
+  });
+
+  it('should return the same direction', () => {
+    expect(
+      acceleration(
+        {
+          magnitude: 1,
+          direction: 90,
+        },
+        2,
+      ),
+    ).toEqual({
+      speed: 0.5,
+      direction: 90,
+    });
   });
 });
 
