@@ -1,14 +1,10 @@
 import { simpleThrustFactory } from './Engine';
-import { TestScheduler } from 'rxjs/testing';
-
-const scheduler = new TestScheduler((actual, expected) => {
-  console.log(actual, expected);
-  expect(actual).toEqual(expected);
-});
+import { schedulerFactory } from '../utils';
 
 describe('Engine', () => {
   describe('throttle', () => {
     it('thrust is 1 as long as throttling is true', () => {
+      const scheduler = schedulerFactory();
       scheduler.run(helpers => {
         const { cold, expectObservable } = helpers;
 
