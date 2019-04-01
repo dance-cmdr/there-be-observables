@@ -82,6 +82,24 @@ export function netForce(a: PhForce, b: PhForce): PhForce {
   };
 }
 
+export function mapVelocityToForce(velocity: PhVelocity): PhForce {
+  return {
+    magnitude: velocity.speed,
+    direction: velocity.direction,
+  };
+}
+
+export function mapForceToVelocity(force: PhForce): PhVelocity {
+  return {
+    speed: force.magnitude,
+    direction: force.direction,
+  };
+}
+
+export function netVelocity(a: PhVelocity, b: PhVelocity): PhVelocity {
+  return mapForceToVelocity(netForce(mapVelocityToForce(a), mapVelocityToForce(b)));
+}
+
 export function normaliseDeg(degrees: number): number {
   const deg = degrees % 360;
   return deg < 0 ? deg + 360 : deg;

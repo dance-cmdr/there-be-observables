@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "./node_modules/.bin/eslint",
     "check-types": "tsc",
     "build": "webpack"

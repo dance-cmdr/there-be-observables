@@ -1,4 +1,4 @@
-import { spaceCraftFactory, positionObservable } from './SpaceCraft';
+import { spaceCraftFactory, positionObservable, velocityObservable } from './SpaceCraft';
 import { schedulerFactory } from '../utils';
 
 describe('spaceCraft', () => {
@@ -17,6 +17,7 @@ describe('spaceCraft', () => {
           {
             enginePower: 1,
             initialPosition,
+            mass: 1,
           },
         );
 
@@ -79,6 +80,41 @@ describe('positionObservable', () => {
       };
 
       expectObservable(position$).toBe(expected, values);
+    });
+  });
+});
+
+describe('velocityObservable', () => {
+  it('should update velocity when thrust is changing', () => {
+    const scheduler = schedulerFactory();
+    scheduler.run(helpers => {
+      const { cold, expectObservable } = helpers;
+
+      const velocity$ = velocityObservable(1, cold('-a-|', { a: 1 }));
+
+      const expected = 'ab-|';
+      const values = { a: { speed: 0, direction: 0 }, b: { speed: 1, direction: 0 } };
+
+      expectObservable(velocity$).toBe(expected, values);
+    });
+  });
+
+  it('should update velocity by constant thrust', () => {
+    const scheduler = schedulerFactory();
+    scheduler.run(helpers => {
+      const { cold, expectObservable } = helpers;
+
+      const velocity$ = velocityObservable(1, cold('-a-a-a-|', { a: 1 }));
+
+      const expected = 'ab-c-d-|';
+      const values = {
+        a: { speed: 0, direction: 0 },
+        b: { speed: 1, direction: 0 },
+        c: { speed: 2, direction: 0 },
+        d: { speed: 3, direction: 0 },
+      };
+
+      expectObservable(velocity$).toBe(expected, values);
     });
   });
 });

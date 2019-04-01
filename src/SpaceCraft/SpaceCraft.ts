@@ -1,7 +1,14 @@
 import { simpleThrustFactory } from '../Engine/Engine';
-import { Observable, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map, withLatestFrom, startWith, scan, distinctUntilChanged } from 'rxjs/operators';
-import { PhPosition, PhVelocity, velocityDisplacement, addVectors, compareVectors } from '../Physics/physics';
+import {
+  PhPosition,
+  PhVelocity,
+  velocityDisplacement,
+  addVectors,
+  compareVectors,
+  netVelocity,
+} from '../Physics/physics';
 
 export interface SpaceCraft {
   position$: Observable<PhPosition>;
@@ -11,6 +18,7 @@ export interface SpaceCraft {
 
 export interface SpaceCraftConfig {
   enginePower: number;
+  mass: number;
   initialPosition: PhPosition;
   initialVelocity?: PhVelocity;
 }
@@ -33,7 +41,7 @@ export const positionObservable = (
   );
 
   const position$ = velocityDisplacement$.pipe(
-    scan((position, displacement) => addVectors(position, displacement), initialPosition),
+    scan((position, displacement) => addVectors(position, displacement), { x: 0, y: 0 }),
     startWith(initialPosition),
     distinctUntilChanged(compareVectors),
   );
@@ -41,9 +49,31 @@ export const positionObservable = (
   return position$;
 };
 
+export const velocityObservable = (
+  mass: number,
+  thrust$: Observable<number>,
+  initialVelocity: PhVelocity = { speed: 0, direction: 0 },
+): Observable<PhVelocity> => {
+  const velocity$: Observable<PhVelocity> = new BehaviorSubject(initialVelocity);
+
+  const acceleration$: Observable<PhVelocity> = thrust$.pipe(
+    withLatestFrom(velocity$),
+    map(([thrust, velocity]) => ({
+      speed: thrust / mass,
+      direction: velocity.direction,
+    })),
+  );
+
+  return acceleration$.pipe(
+    scan(netVelocity, { speed: 0, direction: 0 }),
+    startWith(initialVelocity),
+  );
+};
+
 export const spaceCraftFactory = (CI: SpaceCraftCommandInterface, config: SpaceCraftConfig): SpaceCraft => {
   const thrust$ = simpleThrustFactory(config.enginePower, CI.throttling$);
-  const velocity$ = of(config.initialVelocity || { speed: 0, direction: 0 });
+  const velocity$: Observable<PhVelocity> = velocityObservable(config.mass, thrust$, config.initialVelocity);
+
   const position$ = positionObservable(config.initialPosition, CI.gameClock$, velocity$);
 
   return {
