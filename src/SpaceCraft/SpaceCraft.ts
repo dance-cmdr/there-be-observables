@@ -1,6 +1,6 @@
 import { simpleThrustFactory } from '../Engine/Engine';
-import { Observable, of, interval, merge, from, combineLatest } from 'rxjs';
-import { map, withLatestFrom, startWith, tap, pairwise, reduce, scan, distinctUntilChanged } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, withLatestFrom, startWith, scan, distinctUntilChanged } from 'rxjs/operators';
 import { PhPosition, PhVelocity, velocityDisplacement, addVectors, compareVectors } from '../Physics/physics';
 
 export interface SpaceCraft {
@@ -27,6 +27,7 @@ export const positionObservable = (
 ): Observable<PhPosition> => {
   const velocityDisplacement$ = clock$.pipe(
     withLatestFrom(velocity$),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     map(([_, velocity]) => velocity),
     map(velocityDisplacement),
   );
