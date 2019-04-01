@@ -60,6 +60,10 @@ export function addVectors(a: PhPosition, b: PhPosition): PhPosition {
   };
 }
 
+export function compareVectors(a: PhPosition, b: PhPosition): boolean {
+  return a.x === b.x && a.y === b.y;
+}
+
 /***
  * Calculating net force
  * https://www.dummies.com/education/science/physics/calculating-net-force-and-acceleration/
@@ -101,6 +105,9 @@ export function forceForReferenceAngle(referenceAngle: number, forceAngle: numbe
   return force * modifier;
 }
 
-export function velocityChangeY(y: number, force: number, forceAngle: number): number {
-  return y + forceForReferenceAngle(0, forceAngle, force);
+export function velocityDisplacement(velocity: PhVelocity): PhPosition {
+  return {
+    x: forceForReferenceAngle(90, velocity.direction, velocity.speed),
+    y: forceForReferenceAngle(0, velocity.direction, velocity.speed),
+  };
 }

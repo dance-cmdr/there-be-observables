@@ -1,4 +1,4 @@
-import { normaliseDeg, velocityChangeY, axisEfficiencyModifier, acceleration, netForce } from './physics';
+import { normaliseDeg, axisEfficiencyModifier, acceleration, netForce, velocityDisplacement } from './physics';
 
 describe('physics', () => {
   describe('normaliseDeg', () => {
@@ -47,49 +47,6 @@ describe('physics', () => {
       expect(axisEfficiencyModifier(0, 225)).toEqual(-0.5);
       expect(axisEfficiencyModifier(90, 225)).toEqual(-0.5);
       expect(axisEfficiencyModifier(90, 315)).toEqual(-0.5);
-    });
-  });
-
-  describe('velocityChangeY', () => {
-    describe('angle is 0 degrees from N', () => {
-      it('should add force to y', () => {
-        expect(velocityChangeY(1, 10, 0)).toEqual(11);
-      });
-
-      it('should consider 0 === 360', () => {
-        expect(velocityChangeY(1, 10, 360)).toEqual(11);
-      });
-    });
-
-    describe('angle is 45 degrees from N', () => {
-      it('should add force to y', () => {
-        expect(velocityChangeY(1, 10, 45)).toEqual(6);
-        expect(velocityChangeY(1, 10, -45)).toEqual(6);
-        expect(velocityChangeY(1, 10, 315)).toEqual(6);
-      });
-    });
-
-    describe('angle is 90 degrees from N', () => {
-      it('should add force to y', () => {
-        expect(velocityChangeY(1, 10, 90)).toEqual(1);
-        expect(velocityChangeY(1, 10, -90)).toEqual(1);
-        expect(velocityChangeY(1, 10, 270)).toEqual(1);
-      });
-    });
-
-    describe('angle is 135 degrees from N', () => {
-      it('should add force to y', () => {
-        expect(velocityChangeY(1, 10, 135)).toEqual(-4);
-        expect(velocityChangeY(1, 10, -135)).toEqual(-4);
-        expect(velocityChangeY(1, 10, 225)).toEqual(-4);
-      });
-    });
-
-    describe('angle is 180 degrees from N', () => {
-      it('should add force to y', () => {
-        expect(velocityChangeY(1, 10, 180)).toEqual(-9);
-        expect(velocityChangeY(1, 10, -180)).toEqual(-9);
-      });
     });
   });
 
@@ -209,6 +166,14 @@ describe('physics', () => {
         magnitude: 0,
         direction: 90,
       });
+    });
+  });
+
+  describe('velocityDisplacement', () => {
+    it('should return the displacement of the object after velocity is applied', () => {
+      expect(velocityDisplacement({ speed: 1, direction: 0 })).toEqual({ x: 0, y: 1 });
+      expect(velocityDisplacement({ speed: 1, direction: 45 })).toEqual({ x: 0.5, y: 0.5 });
+      expect(velocityDisplacement({ speed: 1, direction: 90 })).toEqual({ x: 1, y: 0 });
     });
   });
 });
