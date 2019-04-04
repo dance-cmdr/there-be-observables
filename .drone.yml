@@ -13,9 +13,9 @@ pipeline:
     settings:
       bucket: there-be-observables-test
       access_key:
-        from_secret: aws_access_key_id
+        from_secret: aws_access_key
       secret_key:
-        from_secret: aws_secret_access_key
+        from_secret: aws_secret_key
       source: dist/**/*
       target: /${DRONE_PULL_REQUEST}/
     when:
