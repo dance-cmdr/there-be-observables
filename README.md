@@ -4,3 +4,8 @@
 ```
 npm test
 ```
+
+## Build
+```
+npm build
+```
