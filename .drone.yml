@@ -10,14 +10,16 @@ pipeline:
   deploy-test:
     image: plugins/s3
     pull: true
-    settings:
-      bucket: there-be-observables-test
-      access_key:
-        from_secret: aws_access_key_id
-      secret_key:
-        from_secret: aws_secret_access_key
-      source: dist/**/*
-      target: /${DRONE_PULL_REQUEST}/
-      region: 'eu-west-2'
+    commands: 
+      - echo $AWS_ACCESS_KEY_ID
+    # settings:
+    #   bucket: there-be-observables-test
+    #   access_key:
+    #     from_secret: aws_access_key_id
+    #   secret_key:
+    #     from_secret: aws_secret_access_key
+    #   source: dist/**/*
+    #   target: /${DRONE_PULL_REQUEST}/
+    #   region: 'eu-west-2'
     when:
       event: pull_request
