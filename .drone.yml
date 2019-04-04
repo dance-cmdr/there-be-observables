@@ -12,9 +12,9 @@ pipeline:
     pull: true
     settings:
       bucket: there-be-observables-test
-      secrets: [aws_access_key, aws_secret_key]
+      secrets: [aws_access_key_id, aws_secret_access_key]
       source: dist/**/*
       target: /${DRONE_PULL_REQUEST}/
+      region: 'eu-west-2'
     when:
-      branch: master
       event: pull_request
