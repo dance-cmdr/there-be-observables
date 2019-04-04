@@ -12,6 +12,7 @@ pipeline:
     pull: true
     commands: 
       - echo $AWS_ACCESS_KEY_ID
+    secrets: [aws_access_key_id, aws_secret_access_key]
     # settings:
     #   bucket: there-be-observables-test
     #   access_key:
