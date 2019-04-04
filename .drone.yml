@@ -1,9 +1,22 @@
 
 pipeline:
-  test:
-    image: node:latest
-    group: test
-    commands: 
-      - npm install
-      - npm run lint
-      - npm run test
+  install: 
+   image: node:latest
+   pull: true
+   commands:
+     - npm install
+     - npm run lint
+     - npm run test
+  deploy-test:
+    image: plugins/s3
+    pull: true
+    settings:
+      bucket: there-be-observables-test
+      access_key:
+        from_secret: aws_access_key
+      secret_key:
+        from_secret: aws_secret_key
+      source: dist/**/*
+      target: /${DRONE_PULL_REQUEST}/
+    when:
+      event: pull_request
