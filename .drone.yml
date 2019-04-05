@@ -1,7 +1,7 @@
 
 pipeline:
   install: 
-   image: node:8.10
+   image: node:latest
    pull: true
    commands:
      - npm install
