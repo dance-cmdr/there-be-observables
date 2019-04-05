@@ -1,12 +1,24 @@
 {
+    "version": 3,
     "compilerOptions": {
         "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2016",
+        "skipLibCheck": true,
+        "lib": [
+            "dom",
+            "es2015",
+            "es2016"
+         ],
     },
+    
     "include": [
-        "./src/**/*"
+        "./src/**/*.ts"
+    ],
+    "exclude": [
+        "**/*.spec.ts",
+        "./node_modules/**"
     ]
 }

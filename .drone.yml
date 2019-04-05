@@ -4,17 +4,20 @@ pipeline:
    image: node:latest
    pull: true
    commands:
+     - node -v
+     - npm -v
      - npm install
-     - npm run lint
-     - npm run test
+    #  - npm run lint
+    #  - npm run test
+     - npm run build
+     - ls
   deploy-test:
-    image: plugins/s3
+    image: plugins/s3-sync:1
     pull: true
-    settings:
-      bucket: there-be-observables-test
-      secrets: [aws_access_key_id, aws_secret_access_key]
-      source: dist/**/*
-      target: /${DRONE_PULL_REQUEST}/
-      region: 'eu-west-2'
+    secrets: [aws_access_key_id, aws_secret_access_key]
+    bucket: there-be-observables-test
+    source: ./dist
+    target: builds/${DRONE_PULL_REQUEST}
+    region: eu-west-2
     when:
-      event: push
+      event: pull_request
