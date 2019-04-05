@@ -9,6 +9,9 @@
         "lib": ["es2015", "es2015.iterable", "dom"]
     },
     "include": [
-        "./src/**/*"
+        "./src/**"
+    ],
+    "exclude": [
+        "./node_modules/"
     ]
 }
