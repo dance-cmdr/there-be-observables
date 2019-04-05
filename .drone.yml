@@ -7,6 +7,7 @@ pipeline:
      - npm install
      - npm run lint
      - npm run test
+     - echo ls
   deploy-test:
     image: plugins/s3-sync:1
     pull: true
