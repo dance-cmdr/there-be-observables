@@ -8,7 +8,7 @@ pipeline:
      - npm run lint
      - npm run test
   deploy-test:
-    image: plugins/s3
+    image: plugins/s3-sync:1
     pull: true
     secrets: [aws_access_key_id, aws_secret_access_key]
     bucket: there-be-observables-test
