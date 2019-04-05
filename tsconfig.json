@@ -8,6 +8,13 @@
         "target": "es6",
         "lib": ["es6", "es2015.iterable", "dom", "esnext"]
     },
+    "awesomeTypescriptLoaderOptions": {
+        "useBabel": true,
+        "babelOptions": {
+            "babelrc": true, 
+        },
+        "babelCore": "@babel/core",
+    },
     "include": [
         "./src/**/*.ts"
     ],
