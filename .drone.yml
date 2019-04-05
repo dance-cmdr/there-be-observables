@@ -1,16 +1,22 @@
 
 pipeline:
-  install: 
+  install:
+    image: node:latest
+    pull: true
+    commands:
+      - node -v
+      - npm -v
+      - npm install
+  test: 
    image: node:latest
-   pull: true
    commands:
-     - node -v
-     - npm -v
-     - npm install
-    #  - npm run lint
-    #  - npm run test
-     - npm run build
-     - ls
+      - npm run lint
+      - npm run test
+  build:
+    image: node:latest
+    commands:
+      - npm run build
+      - ls dist
   deploy-test:
     image: plugins/s3-sync:1
     pull: true
