@@ -12,7 +12,7 @@ pipeline:
    commands:
       - npm run lint
       - npm run test
-  buid:
+  build:
     image: node:latest
     commands:
       - npm run build
