@@ -13,13 +13,7 @@
             "es2016"
          ],
     },
-    "awesomeTypescriptLoaderOptions": {
-        "useBabel": true,
-        "babelOptions": {
-            "babelrc": true, 
-        },
-        "babelCore": "@babel/core",
-    },
+    
     "include": [
         "./src/**/*.ts"
     ],
