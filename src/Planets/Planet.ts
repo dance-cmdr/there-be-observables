@@ -8,5 +8,9 @@ export const earthMeshFactory = (): Mesh => {
   const geometry = new SphereGeometry(1, 32, 32);
   const material = new MeshPhongMaterial();
   material.map = ImageUtils.loadTexture(earthMap);
-  return new Mesh(geometry, material);
+
+  const earth = new Mesh(geometry, material);
+  earth.rotateY(-2);
+  earth.rotateZ(-0.4);
+  return earth;
 };

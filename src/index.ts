@@ -24,7 +24,7 @@ const camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
 camera.position.z = 5;
 
 var pLight = new PointLight(0xffffaa, 0.7);
-pLight.position.set(10, 10, 100);
+pLight.position.set(50, 10, 100);
 scene.add(pLight);
 
 renderer.setSize(width, height);
@@ -38,3 +38,7 @@ animate();
 
 const earthMesh = earthMeshFactory();
 scene.add(earthMesh);
+
+setInterval(() => {
+  earthMesh.rotateY(0.001);
+}, 1000 / 60);
