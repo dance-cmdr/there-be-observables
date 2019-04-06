@@ -11,7 +11,8 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "lint": "./node_modules/.bin/eslint",
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack-dev-server --color"
   },
   "author": "dance-cmdr",
   "license": "ISC",
@@ -37,7 +38,8 @@
     "ts-loader": "^5.3.3",
     "typescript": "^3.4.1",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.3.0"
+    "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
     "rxjs": "^6.4.0"
