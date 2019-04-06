@@ -42,7 +42,9 @@
     "webpack-dev-server": "^3.2.1"
   },
   "dependencies": {
-    "rxjs": "^6.4.0"
+    "rxjs": "^6.4.0",
+    "three": "^0.103.0",
+    "three-js": "^79.0.0"
   },
   "husky": {
     "hooks": {

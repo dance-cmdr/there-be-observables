@@ -3,9 +3,27 @@
     <head>
         <meta charset="UTF-8" />
         <title>There be observables!</title>
+        <style>
+        * {
+            padding: 0;
+            margin: 0;
+        } 
+        body {
+            background-color: #000;
+            color: #fff;
+            min-width: 100%;
+            min-height: 100%;
+        }
+        #game {
+            width: calc(100vw - 10px);
+            height: calc(100vh - 10px);
+            border: 5px #fff solid;
+        }
+        </style>
     </head>
     <body>
-        <div id="game"></div>
+        <div id="game">
+        </div>
         <script src="./bundle.js"></script>
     </body>
 </html>
