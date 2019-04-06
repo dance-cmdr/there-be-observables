@@ -27,3 +27,14 @@ pipeline:
     region: eu-west-2
     when:
       event: pull_request
+  deploy-production:
+    image: plugins/s3-sync:1
+    pull: true
+    secrets: [aws_access_key_id, aws_secret_access_key]
+    bucket: there-be-observables-prod
+    source: ./dist
+    target: builds/${DRONE_PULL_REQUEST}
+    region: eu-west-2
+    when:
+      event: push
+      branch: master
