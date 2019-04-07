@@ -1,6 +1,10 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, Texture, DoubleSide } from 'three';
 
-export const athmoshpereFactory = (planetSize: number, athmoshpereMap: string, athmoshpereTransMap: string): Mesh => {
+export const athmoshpereCloudsFactory = (
+  planetSize: number,
+  atmoshpereMap: string,
+  atmoshpereTransMap: string,
+): Mesh => {
   // create destination canvas
   var canvasResult = document.createElement('canvas');
   canvasResult.width = 1024;
@@ -44,20 +48,34 @@ export const athmoshpereFactory = (planetSize: number, athmoshpereMap: string, a
         contextResult.putImageData(dataResult, 0, 0);
         material.map.needsUpdate = true;
       });
-      imageTrans.src = athmoshpereTransMap;
+      imageTrans.src = atmoshpereTransMap;
     },
     false,
   );
-  imageMap.src = athmoshpereMap;
+  imageMap.src = atmoshpereMap;
 
   var geometry = new SphereGeometry(planetSize * 1.02, 32, 32);
   var material = new MeshPhongMaterial({
     map: new Texture(canvasResult),
     side: DoubleSide,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.9,
   });
   var mesh = new Mesh(geometry, material);
+
+  return mesh;
+};
+
+export const athmoshpereFactory = (planetSize: number, atmoshpereMap: string, atmoshpereTransMap: string): Mesh => {
+  var geometry = new SphereGeometry(planetSize * 1.04, 32, 32);
+  var material = new MeshPhongMaterial({
+    side: DoubleSide,
+    transparent: true,
+    opacity: 0.1,
+    color: 'cyan',
+  });
+
+  const mesh = new Mesh(geometry, material);
 
   return mesh;
 };

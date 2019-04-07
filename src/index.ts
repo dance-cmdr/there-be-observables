@@ -3,7 +3,8 @@ import { Scene, PerspectiveCamera, WebGLRenderer, PointLight } from 'three';
 import { earthMeshFactory } from './Planets/Earth/Planet';
 import { starfieldFactory } from './Planets/Starfield/Starfield';
 
-const cameraDistance = 3;
+const cameraDistance = 5;
+const earthSize = 1;
 
 const gameElement = document.getElementById('game');
 console.log(gameElement.clientHeight);
@@ -13,11 +14,11 @@ const height = gameElement.clientHeight;
 const scene = new Scene();
 const renderer = new WebGLRenderer();
 
-const camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
+const camera = new PerspectiveCamera(45, width / height, 0.1, 1000);
 camera.position.z = cameraDistance;
 
-var pLight = new PointLight(0xffffff, 1);
-pLight.position.set(30, 5, 100);
+var pLight = new PointLight(0xffffff, 1, 10000, 2);
+pLight.position.set(1000, 5, 1000);
 
 scene.add(pLight);
 
@@ -27,7 +28,7 @@ gameElement.appendChild(renderer.domElement);
 const sky = starfieldFactory(cameraDistance);
 scene.add(sky);
 
-const earthMesh = earthMeshFactory(1);
+const earthMesh = earthMeshFactory(earthSize);
 scene.add(earthMesh);
 
 function getRandomCloudDirection(max: number): number {
