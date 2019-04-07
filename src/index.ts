@@ -1,10 +1,12 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, PointLight, OrthographicCamera } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, PointLight, Vector3 } from 'three';
 
 import { earthMeshFactory } from './Planets/Earth/Planet';
 import { starfieldFactory } from './Planets/Starfield/Starfield';
+import { rocketFactory } from './Rocket';
 
-const cameraDistance = 10;
-const earthSize = 1;
+const cameraDistance = 1000;
+const earthSize = 10;
+const RocketSize = 1;
 
 const gameElement = document.getElementById('game');
 console.log(gameElement.clientHeight);
@@ -14,22 +16,18 @@ const height = gameElement.clientHeight;
 const scene = new Scene();
 const renderer = new WebGLRenderer();
 
-const camera = new PerspectiveCamera(30, width / height, 1, cameraDistance * 2);
+const camera = new PerspectiveCamera(45, width / height, 1, cameraDistance * 2);
 camera.position.z = cameraDistance;
 
 var pLight = new PointLight(0xffffff, 1, 10000, 2);
 pLight.position.set(1000, 5, 1000);
 
-scene.add(pLight);
-
 renderer.setSize(width, height);
 gameElement.appendChild(renderer.domElement);
 
 const sky = starfieldFactory(cameraDistance);
-scene.add(sky);
 
 const earthMesh = earthMeshFactory(earthSize);
-scene.add(earthMesh);
 
 function getRandomCloudDirection(max: number): number {
   return Math.floor(Math.random() * Math.floor(max) - max / 2) / 10000;
@@ -60,3 +58,21 @@ function animate(): void {
   renderer.render(scene, camera);
 }
 animate();
+
+function onWindowResize(): void {
+  const width = gameElement.clientWidth;
+  const height = gameElement.clientHeight;
+  renderer.setSize(width, height);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', onWindowResize, false);
+
+const rocket = rocketFactory();
+rocket.scale;
+console.log(rocket);
+
+scene.add(pLight);
+scene.add(sky);
+scene.add(earthMesh);
+scene.add(rocket);
