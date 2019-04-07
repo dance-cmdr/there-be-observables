@@ -4,7 +4,7 @@ import { earthMeshFactory } from './Planets/Earth/Planet';
 import { starfieldFactory } from './Planets/Starfield/Starfield';
 import { rocketFactory } from './Rocket';
 
-const cameraDistance = 1000;
+const cameraDistance = 50;
 const earthSize = 10;
 const RocketSize = 1;
 
@@ -68,8 +68,8 @@ function onWindowResize(): void {
 }
 window.addEventListener('resize', onWindowResize, false);
 
-const rocket = rocketFactory();
-rocket.scale;
+const rocket = rocketFactory(RocketSize);
+rocket.position.y = earthSize * 1.02;
 console.log(rocket);
 
 scene.add(pLight);
