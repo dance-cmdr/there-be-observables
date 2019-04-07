@@ -1,9 +1,9 @@
-import { Scene, PerspectiveCamera, WebGLRenderer, PointLight } from 'three';
+import { Scene, PerspectiveCamera, WebGLRenderer, PointLight, OrthographicCamera } from 'three';
 
 import { earthMeshFactory } from './Planets/Earth/Planet';
 import { starfieldFactory } from './Planets/Starfield/Starfield';
 
-const cameraDistance = 5;
+const cameraDistance = 10;
 const earthSize = 1;
 
 const gameElement = document.getElementById('game');
@@ -14,7 +14,7 @@ const height = gameElement.clientHeight;
 const scene = new Scene();
 const renderer = new WebGLRenderer();
 
-const camera = new PerspectiveCamera(45, width / height, 0.1, 1000);
+const camera = new PerspectiveCamera(30, width / height, 1, cameraDistance * 2);
 camera.position.z = cameraDistance;
 
 var pLight = new PointLight(0xffffff, 1, 10000, 2);

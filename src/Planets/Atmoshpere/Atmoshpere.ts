@@ -54,7 +54,7 @@ export const athmoshpereCloudsFactory = (
   );
   imageMap.src = atmoshpereMap;
 
-  var geometry = new SphereGeometry(planetSize * 1.02, 32, 32);
+  var geometry = new SphereGeometry(planetSize * 1.03, 32, 32);
   var material = new MeshPhongMaterial({
     map: new Texture(canvasResult),
     side: DoubleSide,
