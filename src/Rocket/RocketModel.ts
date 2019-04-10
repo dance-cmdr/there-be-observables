@@ -1,4 +1,4 @@
-import { Mesh, Object3D, MeshLambertMaterial, BoxGeometry, SphereGeometry, CylinderGeometry } from 'three';
+import { Mesh, Object3D, MeshLambertMaterial, BoxGeometry, SphereGeometry, CylinderGeometry, Colors } from 'three';
 
 function makeCylinder(
   radiusTop: number,
@@ -35,7 +35,7 @@ const makeComponent = (
   return component;
 };
 
-export const rocketFactory = (size: number = 1): Object3D => {
+export const rocketFactory = (size: number = 1, color: Colors = 0xeeeeee): Object3D => {
   const mod = size / 210;
 
   const sn = (value: number): number => value * mod;
@@ -43,7 +43,7 @@ export const rocketFactory = (size: number = 1): Object3D => {
   const rocket = new Object3D();
 
   const bodyMat = new MeshLambertMaterial({
-    color: 0x1d836a,
+    color,
   });
   const ringMat = new MeshLambertMaterial({
     color: 0x3a1b19,
