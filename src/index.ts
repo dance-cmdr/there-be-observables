@@ -2,10 +2,12 @@ import { Scene, PerspectiveCamera, WebGLRenderer, PointLight, Vector3 } from 'th
 
 import { earthMeshFactory } from './Planets/Earth/Planet';
 import { starfieldFactory } from './Planets/Starfield/Starfield';
-import { rocketFactory } from './Rocket';
+import { rocketFactory } from './Rocket/RocketModel';
+import { fromEvent, merge } from 'rxjs';
+import { filter, mapTo, distinctUntilChanged } from 'rxjs/operators';
 
 const cameraDistance = 50;
-const earthSize = 10;
+const earthSize = 5;
 const RocketSize = 1;
 
 const gameElement = document.getElementById('game');
@@ -68,7 +70,7 @@ function onWindowResize(): void {
 }
 window.addEventListener('resize', onWindowResize, false);
 
-const rocket = rocketFactory(RocketSize);
+const rocket = rocketFactory(RocketSize, 0xffffff);
 rocket.position.y = earthSize * 1.02;
 console.log(rocket);
 
