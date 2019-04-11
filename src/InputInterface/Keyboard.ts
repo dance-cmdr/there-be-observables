@@ -1,6 +1,5 @@
-import { fromEvent, merge, Observable } from 'rxjs';
-
-import { filter, mapTo, distinctUntilChanged } from 'rxjs/operators';
+import { fromEvent, merge, Observable, combineLatest } from 'rxjs';
+import { filter, mapTo, distinctUntilChanged, map, debounceTime } from 'rxjs/operators';
 
 const keyDown$ = fromEvent(window, 'keydown');
 const keyUp$ = fromEvent(window, 'keyup');
@@ -19,3 +18,17 @@ export const keyPressed = (key: string): Observable<boolean> =>
       mapTo(false),
     ),
   ).pipe(distinctUntilChanged());
+
+export const opposingValues = (negative$: Observable<boolean>, positive$: Observable<boolean>): Observable<number> =>
+  combineLatest(
+    negative$.pipe(map((value): number => (value ? -1 : 0))),
+    positive$.pipe(map((value): number => (value ? 1 : 0))),
+  ).pipe(
+    map(([negative, positive]): number => negative + positive),
+    debounceTime(0),
+  );
+
+export const playerAInterface = {
+  throttling$: keyPressed('w'),
+  yaw$: opposingValues(keyPressed('a'), keyPressed('d')),
+};
