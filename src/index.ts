@@ -4,7 +4,7 @@ import { interval, fromEvent, animationFrameScheduler } from 'rxjs';
 
 const ROCKET_SIZE = 1;
 
-const animationClock$ = interval(1000 / 60, animationFrameScheduler);
+const animationClock$ = interval(1, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
 
 const gameScene = new GameScene(animationClock$, windowSize$);

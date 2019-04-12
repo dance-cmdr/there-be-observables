@@ -101,8 +101,7 @@ export class GameScene extends Scene {
   }
 
   private render(): void {
-    const { render, renderer, camera } = this;
-    requestAnimationFrame(render.bind(this));
+    const { renderer, camera } = this;
     renderer.render(this, camera);
   }
 
