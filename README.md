@@ -7,5 +7,6 @@ npm test
 
 ## Build
 ```
-npm build
+npm run build
 ```
+
