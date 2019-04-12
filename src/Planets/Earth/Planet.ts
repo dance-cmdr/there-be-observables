@@ -8,8 +8,6 @@ import * as earthCloudMap from './earthcloudmap.jpg';
 import * as earthCloudMapTrans from './earthcloudmaptrans.jpg';
 
 export const earthMeshFactory = (earthSize: number = 1): Mesh => {
-  console.log('earthMap', earthMap);
-
   const geometry = new SphereGeometry(earthSize, 32, 32);
   const material = new MeshPhongMaterial({});
   material.map = ImageUtils.loadTexture(earthMap);
