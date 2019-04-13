@@ -1,84 +1,49 @@
-import { simpleThrustFactory } from '../Engine/Engine';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, withLatestFrom, startWith, scan, distinctUntilChanged } from 'rxjs/operators';
-import {
-  PhPosition,
-  PhVelocity,
-  velocityDisplacement,
-  addVectors,
-  compareVectors,
-  netVelocity,
-} from '../Physics/physics';
+import { Vector3, Object3D, Euler } from 'three';
+import { Observable } from 'rxjs';
+import { map, withLatestFrom, scan } from 'rxjs/operators';
 
-export interface SpaceCraft {
-  position$: Observable<PhPosition>;
-  thrust$: Observable<number>;
-  velocity$: Observable<PhVelocity>;
+export function acceleration(mass: number, force: number, orientation: Vector3): Vector3 {
+  return orientation.multiplyScalar(force / mass);
 }
 
-export interface SpaceCraftConfig {
-  enginePower: number;
-  mass: number;
-  initialPosition: PhPosition;
-  initialVelocity?: PhVelocity;
+export function direction(up: Vector3, rotation: Euler): Vector3 {
+  return up.clone().applyEuler(rotation);
 }
 
-export interface SpaceCraftCommandInterface {
+interface SpaceCraftConfig {
   throttling$: Observable<boolean>;
   gameClock$: Observable<number>;
+  enginePower: number;
+  mass: number;
+  rocket: Object3D;
+  initialVelocity: Vector3;
 }
 
-export const positionObservable = (
-  initialPosition: PhPosition,
-  clock$: Observable<number>,
-  velocity$: Observable<PhVelocity>,
-): Observable<PhPosition> => {
-  const velocityDisplacement$ = clock$.pipe(
-    withLatestFrom(velocity$),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    map(([_, velocity]) => velocity),
-    map(velocityDisplacement),
+export function spaceCraftFactory(config: SpaceCraftConfig): void {
+  const acceleration$: Observable<Vector3> = config.throttling$.pipe(
+    map(
+      (throttles): Vector3 => {
+        if (throttles) {
+          return acceleration(config.mass, config.enginePower, direction(config.rocket.up, config.rocket.rotation));
+        }
+        return new Vector3(0, 0, 0);
+      },
+    ),
   );
 
-  const position$ = velocityDisplacement$.pipe(
-    scan((position, displacement) => addVectors(position, displacement), { x: 0, y: 0 }),
-    startWith(initialPosition),
-    distinctUntilChanged(compareVectors),
+  const velocity$: Observable<Vector3> = config.gameClock$.pipe(
+    withLatestFrom(acceleration$),
+    map(([_, acceleration]): Vector3 => acceleration),
+    scan((velocity, acceleration): Vector3 => velocity.clone().add(acceleration), config.initialVelocity),
   );
 
-  return position$;
-};
-
-export const velocityObservable = (
-  mass: number,
-  thrust$: Observable<number>,
-  initialVelocity: PhVelocity = { speed: 0, direction: 0 },
-): Observable<PhVelocity> => {
-  const velocity$: Observable<PhVelocity> = new BehaviorSubject(initialVelocity);
-
-  const acceleration$: Observable<PhVelocity> = thrust$.pipe(
-    withLatestFrom(velocity$),
-    map(([thrust, velocity]) => ({
-      speed: thrust / mass,
-      direction: velocity.direction,
-    })),
+  const position$: Observable<Vector3> = velocity$.pipe(
+    scan((position, velocity): Vector3 => position.clone().add(velocity), config.rocket.position.clone()),
   );
 
-  return acceleration$.pipe(
-    scan(netVelocity, { speed: 0, direction: 0 }),
-    startWith(initialVelocity),
+  velocity$.subscribe(
+    (velocity: Vector3): void => {
+      config.rocket.position.add(velocity);
+    },
   );
-};
-
-export const spaceCraftFactory = (CI: SpaceCraftCommandInterface, config: SpaceCraftConfig): SpaceCraft => {
-  const thrust$ = simpleThrustFactory(config.enginePower, CI.throttling$);
-  const velocity$: Observable<PhVelocity> = velocityObservable(config.mass, thrust$, config.initialVelocity);
-
-  const position$ = positionObservable(config.initialPosition, CI.gameClock$, velocity$);
-
-  return {
-    position$,
-    velocity$,
-    thrust$,
-  };
-};
+}

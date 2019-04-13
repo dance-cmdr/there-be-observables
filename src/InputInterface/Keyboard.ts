@@ -28,7 +28,18 @@ export const opposingValues = (negative$: Observable<boolean>, positive$: Observ
     debounceTime(0),
   );
 
-export const playerAInterface = {
-  throttling$: keyPressed('w'),
-  yaw$: opposingValues(keyPressed('a'), keyPressed('d')),
-};
+interface PlayerControls {
+  throttling$: Observable<boolean>;
+  yaw$: Observable<number>;
+}
+
+interface PlayerControlKeys {
+  throttlingKey: string;
+  yawLeftKey: string;
+  yawRightKey: string;
+}
+
+export const playerInterface = (keys: PlayerControlKeys): PlayerControls => ({
+  throttling$: keyPressed(keys.throttlingKey),
+  yaw$: opposingValues(keyPressed(keys.yawLeftKey), keyPressed(keys.yawRightKey)),
+});
