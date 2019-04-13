@@ -1,6 +1,6 @@
 import { Vector3, Object3D, Euler } from 'three';
 import { Observable } from 'rxjs';
-import { map, withLatestFrom, scan } from 'rxjs/operators';
+import { map, withLatestFrom, scan, tap } from 'rxjs/operators';
 
 export function acceleration(mass: number, force: number, orientation: Vector3): Vector3 {
   return orientation.multiplyScalar(force / mass);
@@ -12,6 +12,7 @@ export function direction(up: Vector3, rotation: Euler): Vector3 {
 
 interface SpaceCraftConfig {
   throttling$: Observable<boolean>;
+  yaw$: Observable<number>;
   gameClock$: Observable<number>;
   enginePower: number;
   mass: number;
@@ -44,6 +45,25 @@ export function spaceCraftFactory(config: SpaceCraftConfig): void {
   velocity$.subscribe(
     (velocity: Vector3): void => {
       config.rocket.position.add(velocity);
+    },
+  );
+
+  const realisticSpinVelocity$: Observable<number> = config.gameClock$.pipe(
+    withLatestFrom(config.yaw$),
+    map(([_, yaw]): number => yaw),
+    scan((yawVelocity, yawForce): number => yawVelocity + (yawForce * config.enginePower) / config.mass, 0),
+    tap(console.log),
+  );
+
+  const spinVelocity$: Observable<number> = config.gameClock$.pipe(
+    withLatestFrom(config.yaw$),
+    map(([_, yaw]): number => yaw / 100 / config.mass),
+    tap(console.log),
+  );
+
+  spinVelocity$.subscribe(
+    (spinVelocity: number): void => {
+      config.rocket.rotateZ(spinVelocity);
     },
   );
 }

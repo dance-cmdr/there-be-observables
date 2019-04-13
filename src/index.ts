@@ -24,6 +24,7 @@ gameScene.addPlayer(rocket);
 
 spaceCraftFactory({
   throttling$,
+  yaw$,
   gameClock$,
   enginePower: 0.00001,
   mass: 1,
