@@ -2,8 +2,8 @@ import { GameScene } from './Game/Scene/GameScene';
 import { rocketFactory } from './Rocket/RocketModel';
 import { interval, fromEvent, animationFrameScheduler } from 'rxjs';
 import { playerInterface } from './InputInterface/Keyboard';
-import { acceleration, spaceCraftFactory } from './SpaceCraft/SpaceCraft';
-import { Vector3, Object3D } from 'three';
+import { spaceCraftFactory } from './SpaceCraft/SpaceCraft';
+import { Vector3 } from 'three';
 
 const ROCKET_SIZE = 1;
 
