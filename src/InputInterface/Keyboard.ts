@@ -1,5 +1,5 @@
 import { fromEvent, merge, Observable, combineLatest } from 'rxjs';
-import { filter, mapTo, distinctUntilChanged, map, debounceTime } from 'rxjs/operators';
+import { filter, mapTo, distinctUntilChanged, map, debounceTime, startWith } from 'rxjs/operators';
 
 const keyDown$ = fromEvent(window, 'keydown');
 const keyUp$ = fromEvent(window, 'keyup');
@@ -21,8 +21,14 @@ export const keyPressed = (key: string): Observable<boolean> =>
 
 export const opposingValues = (negative$: Observable<boolean>, positive$: Observable<boolean>): Observable<number> =>
   combineLatest(
-    negative$.pipe(map((value): number => (value ? 1 : 0))),
-    positive$.pipe(map((value): number => (value ? -1 : 0))),
+    negative$.pipe(
+      map((value): number => (value ? 1 : 0)),
+      startWith(0),
+    ),
+    positive$.pipe(
+      map((value): number => (value ? -1 : 0)),
+      startWith(0),
+    ),
   ).pipe(
     map(([negative, positive]): number => negative + positive),
     debounceTime(0),
