@@ -10,3 +10,4 @@ npm test
 npm run build
 ```
 
+### yamml config
