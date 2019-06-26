@@ -1,13 +1,24 @@
 import { Vector3, Object3D, Euler } from 'three';
-import { Observable } from 'rxjs';
-import { map, withLatestFrom, scan, tap } from 'rxjs/operators';
+import { Observable, zip } from 'rxjs';
+import { map, withLatestFrom, scan, tap, combineLatest } from 'rxjs/operators';
+
+const G = 9.8;
+const WORLD_SCALE = 10000000;
 
 export function acceleration(mass: number, force: number, orientation: Vector3): Vector3 {
   return orientation.multiplyScalar(force / mass);
 }
 
-export function direction(up: Vector3, rotation: Euler): Vector3 {
+export function orientation(up: Vector3, rotation: Euler): Vector3 {
   return up.clone().applyEuler(rotation);
+}
+
+export function directionOfAFromB(a: Vector3, b: Vector3): Vector3 {
+  return new Vector3().subVectors(b, a).normalize();
+}
+
+export function gAcceleration(position: Vector3, mass: number): Vector3 {
+  return directionOfAFromB(position, new Vector3(0, 0, 0)).multiplyScalar(mass * G);
 }
 
 interface SpaceCraftConfig {
@@ -25,7 +36,11 @@ export function spaceCraftFactory(config: SpaceCraftConfig): void {
     map(
       (throttles): Vector3 => {
         if (throttles) {
-          return acceleration(config.mass, config.enginePower, direction(config.rocket.up, config.rocket.rotation));
+          return acceleration(
+            config.mass,
+            config.enginePower / WORLD_SCALE,
+            orientation(config.rocket.up, config.rocket.rotation),
+          );
         }
         return new Vector3(0, 0, 0);
       },
@@ -35,7 +50,16 @@ export function spaceCraftFactory(config: SpaceCraftConfig): void {
   const velocity$: Observable<Vector3> = config.gameClock$.pipe(
     withLatestFrom(acceleration$),
     map(([_, acceleration]): Vector3 => acceleration),
-    scan((velocity, acceleration): Vector3 => velocity.clone().add(acceleration), config.initialVelocity),
+    scan(
+      (velocity, acceleration): Vector3 =>
+        velocity
+          .clone()
+          .add(acceleration)
+          .add(gAcceleration(config.rocket.position, config.mass).divideScalar(WORLD_SCALE)),
+      config.initialVelocity,
+    ),
+    tap(() => console.log(directionOfAFromB(config.rocket.position, new Vector3(0, 0, 0)))),
+    tap(console.log),
   );
 
   const position$: Observable<Vector3> = velocity$.pipe(
@@ -57,8 +81,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): void {
 
   const spinVelocity$: Observable<number> = config.gameClock$.pipe(
     withLatestFrom(config.yaw$),
-    map(([_, yaw]): number => yaw / 100 / config.mass),
-    tap(console.log),
+    map(([_, yaw]): number => yaw / 150),
   );
 
   spinVelocity$.subscribe(

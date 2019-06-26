@@ -26,8 +26,8 @@ spaceCraftFactory({
   throttling$,
   yaw$,
   gameClock$,
-  enginePower: 0.00001,
-  mass: 1,
+  enginePower: 200000,
+  mass: 100,
   rocket,
   initialVelocity: new Vector3(0, 0, 0),
 });
