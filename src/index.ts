@@ -1,11 +1,11 @@
 import { GameScene } from './Game/Scene/GameScene';
-import { rocketFactory } from './Rocket/RocketModel';
 import { interval, fromEvent, animationFrameScheduler } from 'rxjs';
 import { playerInterface } from './InputInterface/Keyboard';
 import { spaceCraftFactory } from './SpaceCraft/SpaceCraft';
-import { Vector3 } from 'three';
+import { Vector3, ObjectLoader, Group } from 'three';
+import rocketModel from './Rocket/model.json';
 
-const ROCKET_SIZE = 1;
+const ROCKET_SIZE = 0.1;
 
 const gameClock$ = interval(1, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
@@ -13,14 +13,20 @@ const windowSize$ = fromEvent(window, 'resize');
 const gameScene = new GameScene(gameClock$, windowSize$);
 gameScene.mount(document.getElementById('game'));
 
-const rocket = rocketFactory(ROCKET_SIZE, 0xffffff);
 const { throttling$, yaw$ } = playerInterface({
   throttlingKey: 'w',
   yawLeftKey: 'a',
   yawRightKey: 'd',
 });
 
-gameScene.addPlayer(rocket);
+const loader = new ObjectLoader();
+const rocket = loader.parse(rocketModel);
+const player = new Group();
+rocket.scale.set(ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE);
+rocket.rotateY(90);
+player.add(rocket);
+
+gameScene.addPlayer(player);
 
 spaceCraftFactory({
   throttling$,
@@ -28,7 +34,7 @@ spaceCraftFactory({
   gameClock$,
   enginePower: 200000,
   mass: 100,
-  rocket,
+  rocket: player,
   initialVelocity: new Vector3(0, 0, 0),
 });
 

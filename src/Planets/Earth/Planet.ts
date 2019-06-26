@@ -1,11 +1,11 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, ImageUtils, Color } from 'three';
 import { athmoshpereFactory, athmoshpereCloudsFactory } from '../Atmoshpere/Atmoshpere';
 
-import * as earthMap from './earthmap1k.jpg';
-import * as earthBump from './earthbump1k.jpg';
-import * as earthSpec from './earthspec1k.jpg';
-import * as earthCloudMap from './earthcloudmap.jpg';
-import * as earthCloudMapTrans from './earthcloudmaptrans.jpg';
+const earthMap = require('./earthmap1k.jpg');
+const earthBump = require('./earthbump1k.jpg');
+const earthSpec = require('./earthspec1k.jpg');
+const earthCloudMap = require('./earthcloudmap.jpg');
+const earthCloudMapTrans = require('./earthcloudmaptrans.jpg');
 
 export const earthMeshFactory = (earthSize: number = 1): Mesh => {
   const geometry = new SphereGeometry(earthSize, 32, 32);

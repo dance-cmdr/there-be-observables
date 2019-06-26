@@ -1,5 +1,6 @@
 import { Mesh, BackSide, ImageUtils, MeshBasicMaterial, SphereGeometry } from 'three';
-import * as starField from './starfield.jpg';
+
+const starField = require('./starfield.jpg');
 
 export const starfieldFactory = (size: number = 5): Mesh => {
   // create the geometry sphere
