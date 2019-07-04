@@ -1,6 +1,9 @@
 import { opposingValues } from './Keyboard';
 import { schedulerFactory } from '../utils';
 
+import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+
 describe('describe keyboard', (): void => {
   describe('opposingValues', (): void => {
     it('thrust is 1 as long as throttling is true', (): void => {

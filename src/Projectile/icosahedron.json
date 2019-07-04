@@ -1,0 +1,35 @@
+{
+	"metadata": {
+		"version": 4.5,
+		"type": "Object",
+		"generator": "Object3D.toJSON"
+	},
+	"geometries": [
+		{
+			"uuid": "153B4675-C62C-48EB-AC50-93BEA5D9D987",
+			"type": "IcosahedronBufferGeometry",
+			"radius": 0.1,
+			"detail": 0
+		}],
+	"materials": [
+		{
+			"uuid": "27586DA9-07C1-41C5-88E8-B5288737F22E",
+			"type": "MeshStandardMaterial",
+			"color": 16777215,
+			"roughness": 0,
+			"metalness": 0,
+			"emissive": 0,
+			"depthFunc": 3,
+			"depthTest": true,
+			"depthWrite": true
+		}],
+	"object": {
+		"uuid": "747C703C-806A-4052-9548-7B2423635FE7",
+		"type": "Mesh",
+		"name": "Icosahedron",
+		"layers": 1,
+		"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+		"geometry": "153B4675-C62C-48EB-AC50-93BEA5D9D987",
+		"material": "27586DA9-07C1-41C5-88E8-B5288737F22E"
+	}
+}
