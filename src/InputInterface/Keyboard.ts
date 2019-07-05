@@ -1,5 +1,5 @@
 import { fromEvent, merge, Observable, combineLatest } from 'rxjs';
-import { filter, mapTo, distinctUntilChanged, map, debounceTime, startWith, throttle } from 'rxjs/operators';
+import { filter, mapTo, distinctUntilChanged, map, debounceTime, startWith } from 'rxjs/operators';
 
 const keyDown$ = fromEvent(window, 'keydown');
 const keyUp$ = fromEvent(window, 'keyup');
