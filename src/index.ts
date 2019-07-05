@@ -1,12 +1,11 @@
 import { GameScene } from './Game/Scene/GameScene';
-import { interval, fromEvent, animationFrameScheduler, empty, from, timer } from 'rxjs';
-import { filter, zip, map, withLatestFrom, startWith, throttleTime } from 'rxjs/operators';
+import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
+import { withLatestFrom, throttleTime } from 'rxjs/operators';
 import { playerInterface } from './InputInterface/Keyboard';
 import { spaceCraftFactory, acceleration, orientation } from './SpaceCraft/SpaceCraft';
 import { Vector3, ObjectLoader, Group } from 'three';
 import rocketModel from './Rocket/model.json';
 import projectileModel from './Projectile/icosahedron.json';
-import filterRatio from './utils/filterRatio';
 
 const WORLD_SCALE = 10000000;
 const ROCKET_SIZE = 0.1;
@@ -73,10 +72,3 @@ fireProjectile$.pipe(withLatestFrom(velocity$)).subscribe(
     gameScene.add(projectile);
   },
 );
-// gameClock$.subscribe(console.log.bind(null, 'c'));
-
-// gameClock$.subscribe(() => {
-//   //   const direction = rocket.up.clone().applyEuler(rocket.rotation);
-//   //   const thrust = direction.clone().multiplyScalar(0.005);
-//   //   //   rocket.position.addVectors(rocket.position, velocity);
-// });
