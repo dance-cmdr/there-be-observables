@@ -57,7 +57,7 @@ export class GameScene extends Scene {
   }
 
   public addPlayer(object: Object3D): this {
-    object.position.y = this.EARTH_SIZE * 1.02;
+    object.position.y = this.EARTH_SIZE * 1.25;
     this.add(object);
     return this;
   }

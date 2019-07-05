@@ -45,11 +45,11 @@ const { velocity$ } = spaceCraftFactory({
   enginePower: 3000000,
   mass: 500,
   rocket: player,
-  initialVelocity: new Vector3(0, 0.05, 0),
+  initialVelocity: new Vector3(0.06, 0, 0),
 });
 
 const projectiles = [];
-const fireProjectile$ = fire$.pipe(throttleTime(250));
+const fireProjectile$ = fire$.pipe(throttleTime(50));
 
 fireProjectile$.pipe(withLatestFrom(velocity$)).subscribe(
   ([_, velocity]): void => {
