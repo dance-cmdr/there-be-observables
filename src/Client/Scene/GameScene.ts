@@ -1,6 +1,6 @@
 import { Scene, WebGLRenderer, PerspectiveCamera, PointLight, Mesh, Object3D } from 'three';
-import { starfieldFactory } from '../../Planets/Starfield/Starfield';
-import { earthMeshFactory } from '../../Planets/Earth/Planet';
+import { starfieldFactory } from '../../Graphics/Planets/Starfield/Starfield';
+import { earthMeshFactory } from '../../Graphics/Planets/Earth/Planet';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 
 function getRandomCloudDirection(max: number): number {

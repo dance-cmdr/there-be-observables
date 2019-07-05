@@ -1,11 +1,13 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, ImageUtils, Color } from 'three';
 import { athmoshpereFactory, athmoshpereCloudsFactory } from '../Atmoshpere/Atmoshpere';
 
+/* eslint-disable @typescript-eslint/no-var-requires */
 const earthMap = require('./earthmap1k.jpg');
 const earthBump = require('./earthbump1k.jpg');
 const earthSpec = require('./earthspec1k.jpg');
 const earthCloudMap = require('./earthcloudmap.jpg');
 const earthCloudMapTrans = require('./earthcloudmaptrans.jpg');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 export const earthMeshFactory = (earthSize: number = 1): Mesh => {
   const geometry = new SphereGeometry(earthSize, 32, 32);

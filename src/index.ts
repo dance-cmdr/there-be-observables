@@ -1,11 +1,12 @@
-import { GameScene } from './Game/Scene/GameScene';
+import { GameScene } from './Client/Scene/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
 import { withLatestFrom, throttleTime } from 'rxjs/operators';
-import { playerInterface } from './InputInterface/Keyboard';
-import { spaceCraftFactory, acceleration, orientation } from './SpaceCraft/SpaceCraft';
+import { playerInterface } from './Client/InputInterface/Keyboard';
+import { spaceCraftFactory, acceleration, orientation } from './GameComponents/SpaceCraft/SpaceCraft';
 import { Vector3, ObjectLoader, Group } from 'three';
-import rocketModel from './Rocket/model.json';
-import projectileModel from './Projectile/icosahedron.json';
+
+import rocketModel from './Graphics/Rocket/model.json';
+import projectileModel from './Graphics/Projectile/icosahedron.json';
 
 const WORLD_SCALE = 10000000;
 const ROCKET_SIZE = 0.1;
