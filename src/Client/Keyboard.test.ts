@@ -1,5 +1,5 @@
 import { opposingValues } from './Keyboard';
-import { schedulerFactory } from '../../utils';
+import { schedulerFactory } from '../utils';
 
 describe('describe keyboard', (): void => {
   describe('opposingValues', (): void => {
