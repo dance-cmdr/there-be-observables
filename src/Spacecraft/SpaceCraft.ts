@@ -1,23 +1,10 @@
-import { Vector3, Object3D, Euler } from 'three';
+import { Vector3, Object3D } from 'three';
 import { Observable } from 'rxjs';
-import { map, withLatestFrom, scan, tap, startWith } from 'rxjs/operators';
-import { G } from '../Physics/constants';
+import { map, withLatestFrom, scan, startWith } from 'rxjs/operators';
+import { acceleration, gAcceleration } from '../Physics/physics';
+import { directionOfAFromB, orientation } from '../Physics/trigonometry';
 
-export function acceleration(mass: number, force: number, orientation: Vector3): Vector3 {
-  return orientation.multiplyScalar(force / mass);
-}
-
-export function orientation(up: Vector3, rotation: Euler): Vector3 {
-  return up.clone().applyEuler(rotation);
-}
-
-export function directionOfAFromB(a: Vector3, b: Vector3): Vector3 {
-  return new Vector3().subVectors(b, a).normalize();
-}
-
-export function gAcceleration(position: Vector3, mass: number): Vector3 {
-  return directionOfAFromB(position, new Vector3(0, 0, 0)).multiplyScalar(mass * G);
-}
+const EARTH = new Vector3(0, 0, 0);
 
 interface SpaceCraftConfig {
   WORLD_SCALE: number;
@@ -51,13 +38,19 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
 
   const velocity$: Observable<Vector3> = config.gameClock$.pipe(
     withLatestFrom(acceleration$),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     map(([_, acceleration]): Vector3 => acceleration),
     scan(
       (velocity, acceleration): Vector3 =>
         velocity
           .clone()
           .add(acceleration)
-          .add(gAcceleration(config.rocket.position, config.mass).divideScalar(config.WORLD_SCALE)),
+          .add(
+            gAcceleration(
+              directionOfAFromB(config.rocket.position, EARTH),
+              config.mass,
+            ).divideScalar(config.WORLD_SCALE),
+          ),
       config.initialVelocity,
     ),
     startWith(config.initialVelocity),
@@ -71,6 +64,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
 
   const spinVelocity$: Observable<number> = config.gameClock$.pipe(
     withLatestFrom(config.yaw$),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     map(([_, yaw]): number => yaw / 50),
   );
 

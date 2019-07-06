@@ -2,13 +2,18 @@ import { GameScene } from './Client/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
 import { withLatestFrom, throttleTime } from 'rxjs/operators';
 import { playerInterface } from './Client/Keyboard';
-import { spaceCraftFactory, acceleration, orientation } from './Spacecraft/SpaceCraft';
+import { spaceCraftFactory } from './Spacecraft/SpaceCraft';
 import { Vector3, ObjectLoader, Group } from 'three';
+
+import { spaceObjectFactory } from './Spacecraft/SpaceObject';
 
 import rocketModel from './Graphics/Rocket/model.json';
 import projectileModel from './Graphics/Projectile/icosahedron.json';
 
-const WORLD_SCALE = 10000000;
+import { WORLD_SCALE } from './Physics/constants';
+import { acceleration } from './Physics/physics';
+import { orientation } from './Physics/trigonometry';
+
 const ROCKET_SIZE = 0.1;
 const FPS = 120;
 
@@ -37,7 +42,7 @@ player.add(rocket);
 
 gameScene.addPlayer(player);
 
-const { velocity$ } = spaceCraftFactory({
+spaceCraftFactory({
   WORLD_SCALE,
   throttling$,
   yaw$,
@@ -48,28 +53,16 @@ const { velocity$ } = spaceCraftFactory({
   initialVelocity: new Vector3(0.06, 0, 0),
 });
 
-const projectiles = [];
-const fireProjectile$ = fire$.pipe(throttleTime(50));
+fire$.subscribe(() => {
+  const projectile = projectileLoader.parse(projectileModel);
 
-fireProjectile$.pipe(withLatestFrom(velocity$)).subscribe(
-  ([_, velocity]): void => {
-    const projectile = projectileLoader.parse(projectileModel);
+  spaceObjectFactory({
+    gameClock$,
+    model: projectile,
+    velocity: acceleration(1, 1000000 / WORLD_SCALE, orientation(player.up, player.rotation)),
+    position: player.position.clone().add(orientation(player.up, player.rotation)),
+    mass: 1000,
+  });
 
-    projectiles.push(
-      spaceCraftFactory({
-        WORLD_SCALE,
-        throttling$: empty(),
-        yaw$: empty(),
-        gameClock$,
-        enginePower: 0,
-        mass: 1000,
-        rocket: projectile,
-        initialVelocity: acceleration(1, 1200000 / WORLD_SCALE, orientation(player.up, player.rotation)).add(velocity),
-      }),
-    );
-
-    projectile.position.add(player.position);
-
-    gameScene.add(projectile);
-  },
-);
+  gameScene.add(projectile);
+});
