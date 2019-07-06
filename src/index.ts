@@ -2,7 +2,7 @@ import { GameScene } from './Client/Scene/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
 import { withLatestFrom, throttleTime } from 'rxjs/operators';
 import { playerInterface } from './Client/InputInterface/Keyboard';
-import { spaceCraftFactory, acceleration, orientation } from './GameComponents/SpaceCraft/SpaceCraft';
+import { spaceCraftFactory, acceleration, orientation } from './Spacecraft/SpaceCraft';
 import { Vector3, ObjectLoader, Group } from 'three';
 
 import rocketModel from './Graphics/Rocket/model.json';

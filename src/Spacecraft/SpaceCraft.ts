@@ -1,6 +1,6 @@
 import { Vector3, Object3D, Euler } from 'three';
-import { Observable, zip } from 'rxjs';
-import { map, withLatestFrom, scan, tap, combineLatest, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, withLatestFrom, scan, tap, startWith } from 'rxjs/operators';
 
 const G = 9.8;
 
@@ -64,21 +64,10 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
     startWith(config.initialVelocity),
   );
 
-  const position$: Observable<Vector3> = velocity$.pipe(
-    scan((position, velocity): Vector3 => position.clone().add(velocity), config.rocket.position.clone()),
-  );
-
   velocity$.subscribe(
     (velocity: Vector3): void => {
       config.rocket.position.add(velocity);
     },
-  );
-
-  const realisticSpinVelocity$: Observable<number> = config.gameClock$.pipe(
-    withLatestFrom(config.yaw$),
-    map(([_, yaw]): number => yaw),
-    scan((yawVelocity, yawForce): number => yawVelocity + (yawForce * config.enginePower) / config.mass, 0),
-    tap(console.log),
   );
 
   const spinVelocity$: Observable<number> = config.gameClock$.pipe(
@@ -90,6 +79,17 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
     (spinVelocity: number): void => {
       config.rocket.rotateZ(spinVelocity);
     },
+  );
+
+  const position$: Observable<Vector3> = velocity$.pipe(
+    scan((position, velocity): Vector3 => position.clone().add(velocity), config.rocket.position.clone()),
+  );
+
+  const realisticSpinVelocity$: Observable<number> = config.gameClock$.pipe(
+    withLatestFrom(config.yaw$),
+    map(([_, yaw]): number => yaw),
+    scan((yawVelocity, yawForce): number => yawVelocity + (yawForce * config.enginePower) / config.mass, 0),
+    tap(console.log),
   );
 
   return {
