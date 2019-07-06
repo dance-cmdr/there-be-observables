@@ -1,5 +1,5 @@
 import { simpleThrustFactory } from './Engine';
-import { schedulerFactory } from '../../utils';
+import { schedulerFactory } from '../utils';
 
 describe('Engine', () => {
   describe('throttle', () => {
