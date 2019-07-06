@@ -1,8 +1,7 @@
 import { Vector3, Object3D, Euler } from 'three';
 import { Observable } from 'rxjs';
 import { map, withLatestFrom, scan, tap, startWith } from 'rxjs/operators';
-
-const G = 9.8;
+import { G } from '../Physics/constants';
 
 export function acceleration(mass: number, force: number, orientation: Vector3): Vector3 {
   return orientation.multiplyScalar(force / mass);
