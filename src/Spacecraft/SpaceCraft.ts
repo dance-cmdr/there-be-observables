@@ -81,17 +81,6 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
     },
   );
 
-  const position$: Observable<Vector3> = velocity$.pipe(
-    scan((position, velocity): Vector3 => position.clone().add(velocity), config.rocket.position.clone()),
-  );
-
-  const realisticSpinVelocity$: Observable<number> = config.gameClock$.pipe(
-    withLatestFrom(config.yaw$),
-    map(([_, yaw]): number => yaw),
-    scan((yawVelocity, yawForce): number => yawVelocity + (yawForce * config.enginePower) / config.mass, 0),
-    tap(console.log),
-  );
-
   return {
     ...config,
     velocity$,
