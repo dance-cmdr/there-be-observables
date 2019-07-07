@@ -13,12 +13,15 @@ export class GameScene extends Scene {
   private gameElement?: Element;
   private renderer: WebGLRenderer;
   private subscriptions: Subscription[] = [];
-  private camera: PerspectiveCamera;
+  public camera: PerspectiveCamera;
   private sky: Mesh;
-  private earth: Mesh;
+  public earth: Mesh;
   private windVelocity: { x: number; y: number; z: number };
 
-  public constructor(animationFrame$: Observable<number>, windowResize$ = fromEvent(window, 'resize')) {
+  public constructor(
+    animationFrame$: Observable<number>,
+    windowResize$ = fromEvent(window, 'resize'),
+  ) {
     super();
     this.renderer = new WebGLRenderer();
     this.setupCamera();

@@ -1,9 +1,9 @@
 import { GameScene } from './Client/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
-import { withLatestFrom, throttleTime } from 'rxjs/operators';
+import { withLatestFrom, throttleTime, map, distinctUntilChanged, filter } from 'rxjs/operators';
 import { playerInterface } from './Client/Keyboard';
 import { spaceCraftFactory } from './Spacecraft/SpaceCraft';
-import { Vector3, ObjectLoader, Group } from 'three';
+import { Vector3, ObjectLoader, Group, Raycaster, Object3D, Mesh } from 'three';
 
 import { spaceObjectFactory } from './Spacecraft/SpaceObject';
 
@@ -53,6 +53,7 @@ spaceCraftFactory({
   initialVelocity: new Vector3(0.06, 0, 0),
 });
 
+const projectiles: Object3D[] = [];
 fire$.subscribe(() => {
   const projectile = projectileLoader.parse(projectileModel);
 
@@ -65,4 +66,37 @@ fire$.subscribe(() => {
   });
 
   gameScene.add(projectile);
+  projectiles.push(projectile);
 });
+
+// collider
+
+const raycaster = new Raycaster();
+
+gameClock$
+  .pipe(
+    map(() => {
+      // TODO improve the observable maps
+      const earth = gameScene.earth;
+
+      return projectiles.reduce((acc, object) => {
+        raycaster.set(earth.children[0].position, object.position.clone().normalize());
+        const collision = raycaster.intersectObject(object);
+        if (collision[0] && collision[0].distance < 4) {
+          return [...acc, ...raycaster.intersectObject(object)];
+        }
+        return acc;
+      }, []);
+    }),
+    filter(val => val.length > 1),
+  )
+  .subscribe(colisions => {
+    //  TODO fix filtering code
+    console.log(colisions);
+    colisions.forEach(colision => {
+      console.log(colision);
+      console.log(projectiles.indexOf(colision.object));
+      projectiles.splice(projectiles.indexOf(colision.object), 1);
+      gameScene.remove(colision.object);
+    });
+  });
