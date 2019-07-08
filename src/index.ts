@@ -36,6 +36,7 @@ const { throttling$, yaw$, fire$ } = playerInterface({
   yawLeftKey: 'a',
   yawRightKey: 'd',
   fireKey: 'f',
+  gameClock$,
 });
 
 const rocketLoader = new ObjectLoader();
