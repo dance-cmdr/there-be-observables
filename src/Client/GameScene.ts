@@ -23,7 +23,12 @@ export class GameScene extends Scene {
     windowResize$ = fromEvent(window, 'resize'),
   ) {
     super();
-    this.renderer = new WebGLRenderer();
+    this.renderer = new WebGLRenderer({
+      stencil: false,
+      preserveDrawingBuffer: false,
+      alpha: false,
+      powerPreference: 'high-performance',
+    });
     this.setupCamera();
 
     this.setupLight();

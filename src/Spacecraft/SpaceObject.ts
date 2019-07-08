@@ -1,5 +1,5 @@
 import { Vector3, Object3D } from 'three';
-import { Observable, Subject, BehaviorSubject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { map, withLatestFrom, startWith } from 'rxjs/operators';
 import { gAccelerationTowardsEarth } from '../Physics/physics';
 import { orientation } from '../Physics/trigonometry';
@@ -19,6 +19,8 @@ interface SpaceObject {
   position$: Observable<Vector3>;
   orientation$: Observable<Vector3>;
   velocity$: Observable<Vector3>;
+  subscriptions: Subscription[];
+  dispose: () => void;
 }
 
 export const spaceObjectFactory = ({
@@ -40,18 +42,26 @@ export const spaceObjectFactory = ({
     startWith(position || model.position.clone()),
   );
 
-  position$.pipe(withLatestFrom(velocity$)).subscribe(([position, velocity]) => {
-    const gAcc = gAccelerationTowardsEarth(position, mass);
-    velocity$.next(velocity.clone().add(gAcc));
-  });
+  const accelerationUpdate = position$
+    .pipe(withLatestFrom(velocity$))
+    .subscribe(([position, velocity]) => {
+      const gAcc = gAccelerationTowardsEarth(position, mass);
+      velocity$.next(velocity.clone().add(gAcc));
+    });
 
-  position$.subscribe(position => {
+  const positionUpdate = position$.subscribe(position => {
     model.position.copy(position);
   });
+
+  const subscriptions = [accelerationUpdate, positionUpdate];
+
+  const dispose = () => subscriptions.forEach(sub => sub.unsubscribe());
 
   return {
     position$,
     orientation$,
     velocity$,
+    subscriptions,
+    dispose,
   };
 };

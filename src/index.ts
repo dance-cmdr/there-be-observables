@@ -22,7 +22,7 @@ import { acceleration } from './Physics/physics';
 import { orientation } from './Physics/trigonometry';
 
 const ROCKET_SIZE = 0.1;
-const FPS = 120;
+const FPS = 60;
 
 const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
@@ -50,7 +50,7 @@ player.add(rocket);
 
 gameScene.addPlayer(player);
 
-spaceCraftFactory({
+const { velocity$ } = spaceCraftFactory({
   WORLD_SCALE,
   throttling$,
   yaw$,
@@ -61,29 +61,51 @@ spaceCraftFactory({
   initialVelocity: new Vector3(0.06, 0, 0),
 });
 
-const projectiles: Object3D[] = [];
-fire$.subscribe(() => {
-  const projectile = projectileLoader.parse(projectileModel);
+const PROJECTILES_LENGTH = 1000;
+const projectile = projectileLoader.parse(projectileModel);
+const projectiles: Object3D[] = new Array(PROJECTILES_LENGTH);
 
-  spaceObjectFactory({
+for (let i = 0; i < PROJECTILES_LENGTH; i++) {
+  console.log(i);
+  const prj = projectile.clone(false);
+  projectiles[i] = prj;
+  prj.visible = false;
+  gameScene.add(prj);
+}
+let cp = 0;
+
+fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => {
+  const prj = projectiles[cp];
+
+  console.log(prj);
+
+  prj.userData.spaceObject = spaceObjectFactory({
     gameClock$,
-    model: projectile,
-    velocity: acceleration(1, 1000000 / WORLD_SCALE, orientation(player.up, player.rotation)),
+    model: prj,
+    velocity: acceleration(1, 1000000 / WORLD_SCALE, orientation(player.up, player.rotation)).add(
+      velocity,
+    ),
     position: player.position.clone().add(orientation(player.up, player.rotation)),
     mass: 1000,
   });
 
-  gameScene.add(projectile);
-  projectiles.push(projectile);
+  prj.visible = true;
+
+  cp++;
+  if (cp > projectiles.length - 1) {
+    cp = 0;
+  }
+
+  console.log(cp);
 });
 
 // collider
-
 const raycaster = new Raycaster();
 
 const destroyProjectileWithIndex = (index: number): void => {
-  gameScene.remove(projectiles[index]);
-  projectiles.splice(index, 1);
+  const projectile = projectiles[index];
+  projectile.visible = false;
+  projectile.userData.spaceObject.dispose();
   console.log('projectiles ', projectiles.length);
 };
 
