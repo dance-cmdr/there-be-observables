@@ -8,7 +8,7 @@ function getRandomCloudDirection(max: number): number {
 }
 
 export class GameScene extends Scene {
-  public EARTH_SIZE = 5;
+  public EARTH_RADIUS = 5;
   public CAMERA_DISTANCE = 50;
   private gameElement?: Element;
   private renderer: WebGLRenderer;
@@ -60,7 +60,7 @@ export class GameScene extends Scene {
   }
 
   public addPlayer(object: Object3D): this {
-    object.position.y = this.EARTH_SIZE * 1.25;
+    object.position.y = this.EARTH_RADIUS * 1.25;
     this.add(object);
     return this;
   }
@@ -85,7 +85,7 @@ export class GameScene extends Scene {
   }
 
   private setupEarth(): void {
-    const earth = earthMeshFactory(this.EARTH_SIZE);
+    const earth = earthMeshFactory(this.EARTH_RADIUS);
     this.add(earth);
     this.earth = earth;
 

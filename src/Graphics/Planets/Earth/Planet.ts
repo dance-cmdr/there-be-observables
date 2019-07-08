@@ -9,8 +9,8 @@ const earthCloudMap = require('./earthcloudmap.jpg');
 const earthCloudMapTrans = require('./earthcloudmaptrans.jpg');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
-export const earthMeshFactory = (earthSize: number = 1): Mesh => {
-  const geometry = new SphereGeometry(earthSize, 32, 32);
+export const earthMeshFactory = (earthRadius: number = 1): Mesh => {
+  const geometry = new SphereGeometry(earthRadius, 32, 32);
   const material = new MeshPhongMaterial({});
   material.map = ImageUtils.loadTexture(earthMap);
   material.bumpMap = ImageUtils.loadTexture(earthBump);
@@ -23,8 +23,8 @@ export const earthMeshFactory = (earthSize: number = 1): Mesh => {
   earth.rotateY(-1);
   earth.rotateZ(-0.4);
 
-  earth.add(athmoshpereCloudsFactory(earthSize, earthCloudMap, earthCloudMapTrans));
-  earth.add(athmoshpereFactory(earthSize, earthCloudMap, earthCloudMapTrans));
+  earth.add(athmoshpereCloudsFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
+  earth.add(athmoshpereFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
 
   return earth;
 };

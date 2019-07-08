@@ -1,6 +1,13 @@
 import { GameScene } from './Client/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty } from 'rxjs';
-import { withLatestFrom, throttleTime, map, distinctUntilChanged, filter } from 'rxjs/operators';
+import {
+  withLatestFrom,
+  throttleTime,
+  map,
+  distinctUntilChanged,
+  filter,
+  tap,
+} from 'rxjs/operators';
 import { playerInterface } from './Client/Keyboard';
 import { spaceCraftFactory } from './Spacecraft/SpaceCraft';
 import { Vector3, ObjectLoader, Group, Raycaster, Object3D, Mesh } from 'three';
@@ -21,6 +28,7 @@ const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
 
 const gameScene = new GameScene(gameClock$, windowSize$);
+const { EARTH_RADIUS } = gameScene;
 gameScene.mount(document.getElementById('game'));
 
 const { throttling$, yaw$, fire$ } = playerInterface({
@@ -73,30 +81,36 @@ fire$.subscribe(() => {
 
 const raycaster = new Raycaster();
 
+const destroyProjectileWithIndex = (index: number): void => {
+  gameScene.remove(projectiles[index]);
+  projectiles.splice(index, 1);
+  console.log('projectiles ', projectiles.length);
+};
+
 gameClock$
   .pipe(
     map(() => {
-      // TODO improve the observable maps
+      // Raycast for collisions and return if the current projectile collides
       const earth = gameScene.earth;
 
       return projectiles.reduce((acc, object) => {
         raycaster.set(earth.children[0].position, object.position.clone().normalize());
-        const collision = raycaster.intersectObject(object);
-        if (collision[0] && collision[0].distance < 4) {
-          return [...acc, ...raycaster.intersectObject(object)];
-        }
-        return acc;
+        const collisions = raycaster.intersectObject(object);
+        const collision = collisions.find(collision => collision.object === object);
+        return [...acc, ...(collision ? [collision] : [])];
       }, []);
     }),
-    filter(val => val.length > 1),
+    map(collisions => collisions.filter(({ distance }) => distance < EARTH_RADIUS)),
+    map(collisions => collisions.map(({ object }) => object)),
+    map(collidingObjects =>
+      projectiles.reduce((acc, projectile, index) => {
+        if (collidingObjects.indexOf(projectile) > -1) {
+          return [index, ...acc];
+        }
+        return acc;
+      }, []),
+    ),
   )
-  .subscribe(colisions => {
-    //  TODO fix filtering code
-    console.log(colisions);
-    colisions.forEach(colision => {
-      console.log(colision);
-      console.log(projectiles.indexOf(colision.object));
-      projectiles.splice(projectiles.indexOf(colision.object), 1);
-      gameScene.remove(colision.object);
-    });
+  .subscribe(collidingProjectileIndeces => {
+    collidingProjectileIndeces.forEach(destroyProjectileWithIndex);
   });

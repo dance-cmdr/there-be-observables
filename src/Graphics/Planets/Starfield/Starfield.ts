@@ -2,9 +2,9 @@ import { Mesh, BackSide, ImageUtils, MeshBasicMaterial, SphereGeometry } from 't
 
 const starField = require('./starfield.jpg');
 
-export const starfieldFactory = (size: number = 5): Mesh => {
+export const starfieldFactory = (radius: number = 5): Mesh => {
   // create the geometry sphere
-  var geometry = new SphereGeometry(size, 32, 32);
+  var geometry = new SphereGeometry(radius, 32, 32);
   // create the material, using a texture of startfield
   var material = new MeshBasicMaterial();
   material.map = ImageUtils.loadTexture(starField);

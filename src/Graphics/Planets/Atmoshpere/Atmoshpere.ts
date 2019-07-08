@@ -1,7 +1,7 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, Texture, DoubleSide } from 'three';
 
 export const athmoshpereCloudsFactory = (
-  planetSize: number,
+  planetRadius: number,
   atmoshpereMap: string,
   atmoshpereTransMap: string,
 ): Mesh => {
@@ -54,7 +54,7 @@ export const athmoshpereCloudsFactory = (
   );
   imageMap.src = atmoshpereMap;
 
-  var geometry = new SphereGeometry(planetSize * 1.03, 32, 32);
+  var geometry = new SphereGeometry(planetRadius * 1.03, 32, 32);
   var material = new MeshPhongMaterial({
     map: new Texture(canvasResult),
     side: DoubleSide,
@@ -66,8 +66,12 @@ export const athmoshpereCloudsFactory = (
   return mesh;
 };
 
-export const athmoshpereFactory = (planetSize: number, atmoshpereMap: string, atmoshpereTransMap: string): Mesh => {
-  var geometry = new SphereGeometry(planetSize * 1.04, 32, 32);
+export const athmoshpereFactory = (
+  planetRadius: number,
+  atmoshpereMap: string,
+  atmoshpereTransMap: string,
+): Mesh => {
+  var geometry = new SphereGeometry(planetRadius * 1.04, 32, 32);
   var material = new MeshPhongMaterial({
     side: DoubleSide,
     transparent: true,
