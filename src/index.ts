@@ -7,6 +7,8 @@ import {
   distinctUntilChanged,
   filter,
   tap,
+  delay,
+  mapTo,
 } from 'rxjs/operators';
 import { playerInterface } from './Client/Keyboard';
 import { spaceCraftFactory } from './Spacecraft/SpaceCraft';
@@ -31,13 +33,19 @@ const gameScene = new GameScene(gameClock$, windowSize$);
 const { EARTH_RADIUS } = gameScene;
 gameScene.mount(document.getElementById('game'));
 
-const { throttling$, yaw$, fire$ } = playerInterface({
+const {
+  throttling$,
+  // yaw$,
+  // fire$,
+} = playerInterface({
   throttlingKey: 'w',
   yawLeftKey: 'a',
   yawRightKey: 'd',
   fireKey: 'f',
   gameClock$,
 });
+
+const yaw$ = interval(500).pipe(mapTo(-1));
 
 const rocketLoader = new ObjectLoader();
 const rocket = rocketLoader.parse(rocketModel);
@@ -65,21 +73,30 @@ const { velocity$ } = spaceCraftFactory({
 const PROJECTILES_LENGTH = 1000;
 const projectile = projectileLoader.parse(projectileModel);
 const projectiles: Object3D[] = new Array(PROJECTILES_LENGTH);
+const activeProjectiles: Map<number, Object3D> = new Map();
 
 for (let i = 0; i < PROJECTILES_LENGTH; i++) {
   console.log(i);
   const prj = projectile.clone(false);
   projectiles[i] = prj;
   prj.visible = false;
+  prj.userData.index = i;
   gameScene.add(prj);
 }
 let cp = 0;
 
-fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => {
+const destroyProjectileWithIndex = (index: number): void => {
+  const projectile = projectiles[index];
+  projectile.visible = false;
+  if (projectile.userData.spaceObject) {
+    projectile.userData.spaceObject.dispose();
+  }
+  activeProjectiles.delete(index);
+  console.log(index, activeProjectiles);
+};
+
+const createProjectile = (velocity: Vector3 = new Vector3(0, 0, 0)): void => {
   const prj = projectiles[cp];
-
-  console.log(prj);
-
   prj.userData.spaceObject = spaceObjectFactory({
     gameClock$,
     model: prj,
@@ -92,48 +109,47 @@ fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => {
 
   prj.visible = true;
 
+  activeProjectiles.set(cp, prj);
+
   cp++;
+
   if (cp > projectiles.length - 1) {
     cp = 0;
   }
+};
 
-  console.log(cp);
-});
+// fire$;
+interval(100)
+  .pipe(withLatestFrom(velocity$))
+  .subscribe(([_, velocity]) => createProjectile(velocity));
 
 // collider
 const raycaster = new Raycaster();
-
-const destroyProjectileWithIndex = (index: number): void => {
-  const projectile = projectiles[index];
-  projectile.visible = false;
-  projectile.userData.spaceObject.dispose();
-  console.log('projectiles ', projectiles.length);
-};
 
 gameClock$
   .pipe(
     map(() => {
       // Raycast for collisions and return if the current projectile collides
       const earth = gameScene.earth;
+      const collisionsList = [];
 
-      return projectiles.reduce((acc, object) => {
+      for (let [index, object] of activeProjectiles.entries()) {
         raycaster.set(earth.children[0].position, object.position.clone().normalize());
         const collisions = raycaster.intersectObject(object);
-        const collision = collisions.find(collision => collision.object === object);
-        return [...acc, ...(collision ? [collision] : [])];
-      }, []);
-    }),
-    map(collisions => collisions.filter(({ distance }) => distance < EARTH_RADIUS)),
-    map(collisions => collisions.map(({ object }) => object)),
-    map(collidingObjects =>
-      projectiles.reduce((acc, projectile, index) => {
-        if (collidingObjects.indexOf(projectile) > -1) {
-          return [index, ...acc];
+        const collision = collisions.find(
+          collision => collision.object.uuid === object.uuid && collision.distance < EARTH_RADIUS,
+        );
+        if (collision) {
+          collisionsList.push(index);
         }
-        return acc;
-      }, []),
-    ),
+      }
+
+      return collisionsList.reverse();
+    }),
+
+    filter(collidingIndeces => !!collidingIndeces.length),
   )
   .subscribe(collidingProjectileIndeces => {
+    console.log(collidingProjectileIndeces);
     collidingProjectileIndeces.forEach(destroyProjectileWithIndex);
   });
