@@ -70,7 +70,6 @@ const projectiles: Object3D[] = new Array(PROJECTILES_LENGTH);
 const activeProjectiles: Map<number, Object3D> = new Map();
 
 for (let i = 0; i < PROJECTILES_LENGTH; i++) {
-  console.log(i);
   const prj = projectile.clone(false);
   projectiles[i] = prj;
   prj.visible = false;
@@ -86,7 +85,6 @@ const destroyProjectileWithIndex = (index: number): void => {
     projectile.userData.spaceObject.dispose();
   }
   activeProjectiles.delete(index);
-  console.log(index, activeProjectiles);
 };
 
 const createProjectile = (velocity: Vector3 = new Vector3(0, 0, 0)): void => {
@@ -117,37 +115,62 @@ fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => createProject
 // collider
 const raycaster = new Raycaster();
 
-const detectCollision = (origin: Mesh, object: Object3D): boolean => {
+const detectCollision = (origin: Mesh | Group, object: Object3D, radius: number): boolean => {
   raycaster.set(origin.position, object.position.clone().normalize());
   const collisions = raycaster.intersectObject(object);
   const collision = collisions.find(
-    collision =>
-      collision.object.uuid === object.uuid &&
-      collision.distance < origin.geometry.boundingSphere.radius,
+    collision => collision.object.uuid === object.uuid && collision.distance < radius,
   );
 
   return !!collision;
 };
 
-gameClock$
-  .pipe(
-    map(() => {
-      // Raycast for collisions and return if the current projectile collides
-      const earth = gameScene.earth;
-      const collisionsList = [];
+const COLLISION_TYPES = {
+  EARTH: 'earth',
+  PLAYER: 'player',
+};
 
-      for (let [index, object] of activeProjectiles.entries()) {
-        if (detectCollision(earth, object)) {
-          collisionsList.push(index);
-        }
+const collisions$ = gameClock$.pipe(
+  map(() => {
+    // Raycast for collisions and return if the current projectile collides
+    const earth = gameScene.earth;
+    const collisionsList = [];
+
+    for (let [index, object] of activeProjectiles.entries()) {
+      if (detectCollision(earth, object, earth.geometry.boundingSphere.radius)) {
+        collisionsList.push({
+          index,
+          type: COLLISION_TYPES.EARTH,
+        });
       }
 
-      return collisionsList.reverse();
-    }),
+      if (detectCollision(player, object, 0.75)) {
+        collisionsList.push({
+          index,
+          type: COLLISION_TYPES.PLAYER,
+        });
+      }
+    }
 
+    return collisionsList.reverse();
+  }),
+);
+
+collisions$
+  .pipe(
+    map(collisions => collisions.filter(({ type }) => type === COLLISION_TYPES.EARTH)),
     filter(collidingIndeces => !!collidingIndeces.length),
   )
-  .subscribe(collidingProjectileIndeces => {
-    console.log(collidingProjectileIndeces);
-    collidingProjectileIndeces.forEach(destroyProjectileWithIndex);
+  .subscribe(collisions => {
+    collisions.forEach(({ index }) => destroyProjectileWithIndex(index));
+  });
+
+collisions$
+  .pipe(
+    map(collisions => collisions.filter(({ type }) => type === COLLISION_TYPES.PLAYER)),
+    filter(collidingIndeces => !!collidingIndeces.length),
+  )
+  .subscribe(collisions => {
+    collisions.forEach(({ index }) => destroyProjectileWithIndex(index));
+    console.log(collisions, 'YOU ARE DEAD');
   });
