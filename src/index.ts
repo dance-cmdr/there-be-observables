@@ -117,6 +117,18 @@ fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => createProject
 // collider
 const raycaster = new Raycaster();
 
+const detectCollision = (origin: Mesh, object: Object3D): boolean => {
+  raycaster.set(origin.position, object.position.clone().normalize());
+  const collisions = raycaster.intersectObject(object);
+  const collision = collisions.find(
+    collision =>
+      collision.object.uuid === object.uuid &&
+      collision.distance < origin.geometry.boundingSphere.radius,
+  );
+
+  return !!collision;
+};
+
 gameClock$
   .pipe(
     map(() => {
@@ -125,12 +137,7 @@ gameClock$
       const collisionsList = [];
 
       for (let [index, object] of activeProjectiles.entries()) {
-        raycaster.set(earth.children[0].position, object.position.clone().normalize());
-        const collisions = raycaster.intersectObject(object);
-        const collision = collisions.find(
-          collision => collision.object.uuid === object.uuid && collision.distance < EARTH_RADIUS,
-        );
-        if (collision) {
+        if (detectCollision(earth, object)) {
           collisionsList.push(index);
         }
       }
