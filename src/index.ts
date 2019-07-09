@@ -24,7 +24,7 @@ import { acceleration } from './Physics/physics';
 import { orientation } from './Physics/trigonometry';
 
 const ROCKET_SIZE = 0.1;
-const FPS = 60;
+const FPS = 100;
 
 const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
@@ -33,19 +33,13 @@ const gameScene = new GameScene(gameClock$, windowSize$);
 const { EARTH_RADIUS } = gameScene;
 gameScene.mount(document.getElementById('game'));
 
-const {
-  throttling$,
-  // yaw$,
-  // fire$,
-} = playerInterface({
+const { throttling$, yaw$, fire$ } = playerInterface({
   throttlingKey: 'w',
   yawLeftKey: 'a',
   yawRightKey: 'd',
   fireKey: 'f',
   gameClock$,
 });
-
-const yaw$ = interval(500).pipe(mapTo(-1));
 
 const rocketLoader = new ObjectLoader();
 const rocket = rocketLoader.parse(rocketModel);
@@ -118,10 +112,7 @@ const createProjectile = (velocity: Vector3 = new Vector3(0, 0, 0)): void => {
   }
 };
 
-// fire$;
-interval(100)
-  .pipe(withLatestFrom(velocity$))
-  .subscribe(([_, velocity]) => createProjectile(velocity));
+fire$.pipe(withLatestFrom(velocity$)).subscribe(([_, velocity]) => createProjectile(velocity));
 
 // collider
 const raycaster = new Raycaster();

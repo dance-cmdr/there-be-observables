@@ -34,7 +34,7 @@ export const keyHold = (gameClock$: Observable<number>, key: string): Observable
     withLatestFrom(keyPressed(key)),
     map(([_, pressed]) => pressed),
     filter(val => val === true),
-    throttleTime(10),
+    throttleTime(100),
   );
 
 export const opposingValues = (
