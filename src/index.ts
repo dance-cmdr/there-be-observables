@@ -1,18 +1,9 @@
-import { GameScene, StartingPosition } from './Client/GameScene';
+import { GameScene } from './Client/GameScene';
 import { interval, fromEvent, animationFrameScheduler, empty, timer } from 'rxjs';
-import {
-  withLatestFrom,
-  throttleTime,
-  map,
-  distinctUntilChanged,
-  filter,
-  tap,
-  delay,
-  mapTo,
-} from 'rxjs/operators';
+import { withLatestFrom, map, filter } from 'rxjs/operators';
 import { playerInterface } from './Client/Keyboard';
 import { spaceCraftFactory, SpaceCraft } from './Spacecraft/SpaceCraft';
-import { Vector3, ObjectLoader, Group, Raycaster, Object3D, Mesh } from 'three';
+import { Vector3, ObjectLoader, Group, Object3D } from 'three';
 
 import { spaceObjectFactory } from './Spacecraft/SpaceObject';
 
@@ -22,9 +13,27 @@ import projectileModel from './Graphics/Projectile/icosahedron.json';
 import { WORLD_SCALE } from './Physics/constants';
 import { acceleration } from './Physics/physics';
 import { orientation } from './Physics/trigonometry';
+import { collitionDetection, COLLISION_TYPES } from './CollisionDetection';
 
 const ROCKET_SIZE = 0.1;
 const FPS = 100;
+const EARTH_RADIUS = 5;
+
+interface StartingPosition {
+  position: Vector3;
+  angle: Vector3;
+}
+
+const PLAYER_STARTING_POSITIONS: StartingPosition[] = [
+  {
+    position: new Vector3(0, EARTH_RADIUS * 1.25, 0),
+    angle: new Vector3(0, 0, 0),
+  },
+  {
+    position: new Vector3(0, EARTH_RADIUS * 1.25 * -1, 0),
+    angle: new Vector3(0, 0, 0),
+  },
+];
 
 const spawn = (object: Object3D, { position, angle }: StartingPosition): void => {
   object.position.x = position.x;
@@ -49,7 +58,7 @@ const playerObjectFactory = (model: Object3D): Object3D => {
 const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
 const windowSize$ = fromEvent(window, 'resize');
 
-const gameScene = new GameScene(gameClock$, windowSize$);
+const gameScene = new GameScene(gameClock$, windowSize$, EARTH_RADIUS);
 
 gameScene.mount(document.getElementById('game'));
 
@@ -79,6 +88,10 @@ const playerObjects = [
   playerObjectFactory(rocketLoader.parse(rocketModel)),
   playerObjectFactory(rocketLoader.parse(rocketModel)),
 ];
+
+/**
+ * Projectiles
+ */
 
 const PROJECTILES_LENGTH = 1000;
 const projectile = projectileLoader.parse(projectileModel);
@@ -128,7 +141,9 @@ const createProjectile = (originator: Object3D, velocity: Vector3 = new Vector3(
   }
 };
 
-// initialise spaceCrafts
+/**
+ * Initialise SpaceCraft
+ */
 const spaceCrafts = playerObjects.map((playerObject, index) => {
   const { yaw$, throttling$, fire$ } = playerInterfaces[index];
 
@@ -151,72 +166,15 @@ const spaceCrafts = playerObjects.map((playerObject, index) => {
 
   // initialise
   gameScene.add(spaceCraft.model);
-  spawn(spaceCraft.model, gameScene.PLAYER_STARTING_POSITIONS[spaceCraft.id]);
+  spawn(spaceCraft.model, PLAYER_STARTING_POSITIONS[spaceCraft.id]);
 
   return spaceCraft;
 });
 
-// Collision Detection
-const raycaster = new Raycaster();
-
-const detectCollision = (
-  origin: Mesh | Group | Object3D,
-  object: Object3D,
-  radius: number,
-): boolean => {
-  raycaster.set(origin.position, object.position.clone().normalize());
-  const collisions = raycaster.intersectObject(object);
-  const collision = collisions.find(
-    collision => collision.object.uuid === object.uuid && collision.distance < radius,
-  );
-
-  return !!collision;
-};
-
-const COLLISION_TYPES = {
-  EARTH: 'earth',
-  PLAYER: 'player',
-};
-
-interface Collision {
-  index: number;
-  type: string;
-  object: Object3D;
-  spaceCraft?: SpaceCraft;
-}
-
-const collisions$ = gameClock$.pipe(
-  map(() => {
-    // Raycast for collisions and return if the current projectile collides
-    const earth = gameScene.earth;
-    const collisionsList: Collision[] = [];
-
-    for (let [index, object] of activeProjectiles.entries()) {
-      // projectile to earth collision
-      if (detectCollision(earth, object, earth.geometry.boundingSphere.radius)) {
-        collisionsList.push({
-          index,
-          type: COLLISION_TYPES.EARTH,
-          object,
-        });
-      }
-
-      // spaceCraft to Projectile Collision detection
-      spaceCrafts.forEach(spaceCraft => {
-        if (detectCollision(spaceCraft.model, object, 0.75)) {
-          collisionsList.push({
-            index,
-            type: COLLISION_TYPES.PLAYER,
-            object: spaceCraft.model,
-            spaceCraft,
-          });
-        }
-      });
-    }
-
-    return collisionsList.reverse();
-  }),
-);
+/**
+ * Collision Detection
+ */
+const collisions$ = collitionDetection(gameClock$, gameScene.earth, activeProjectiles, spaceCrafts);
 
 collisions$
   .pipe(
@@ -238,7 +196,7 @@ collisions$
       console.log(collisions, `Player ${spaceCraft.id} is DEAD`);
       spaceCraftDestroyed(spaceCraft);
       timer(5000).subscribe(() => {
-        spawn(spaceCraft.model, gameScene.PLAYER_STARTING_POSITIONS[spaceCraft.id]);
+        spawn(spaceCraft.model, PLAYER_STARTING_POSITIONS[spaceCraft.id]);
       });
     });
   });

@@ -15,24 +15,9 @@ function getRandomCloudDirection(max: number): number {
   return Math.floor(Math.random() * Math.floor(max) - max / 2) / 10000;
 }
 
-export interface StartingPosition {
-  position: Vector3;
-  angle: Vector3;
-}
-
 export class GameScene extends Scene {
-  public EARTH_RADIUS = 5;
-  public CAMERA_DISTANCE = 50;
-  public PLAYER_STARTING_POSITIONS: StartingPosition[] = [
-    {
-      position: new Vector3(0, this.EARTH_RADIUS * 1.25, 0),
-      angle: new Vector3(0, 0, 0),
-    },
-    {
-      position: new Vector3(0, this.EARTH_RADIUS * 1.25 * -1, 0),
-      angle: new Vector3(0, 0, 0),
-    },
-  ];
+  public EARTH_RADIUS: number;
+  public CAMERA_DISTANCE: number;
 
   private gameElement?: Element;
   private renderer: WebGLRenderer;
@@ -45,8 +30,12 @@ export class GameScene extends Scene {
   public constructor(
     animationFrame$: Observable<number>,
     windowResize$ = fromEvent(window, 'resize'),
+    EARTH_RADIUS: number,
+    CAMERA_DISTANCE?: number,
   ) {
     super();
+    this.EARTH_RADIUS = EARTH_RADIUS;
+    this.CAMERA_DISTANCE = CAMERA_DISTANCE || EARTH_RADIUS * 10;
     this.renderer = new WebGLRenderer({
       stencil: false,
       preserveDrawingBuffer: false,
