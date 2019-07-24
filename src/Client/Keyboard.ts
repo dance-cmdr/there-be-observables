@@ -8,7 +8,6 @@ import {
   startWith,
   withLatestFrom,
   throttleTime,
-  tap,
 } from 'rxjs/operators';
 
 const keyDown$ = fromEvent(window, 'keydown');
@@ -21,7 +20,6 @@ const filterKey = (value: string): (({  }: KeyboardEvent) => boolean) => ({
 export const keyPressed = (key: string): Observable<boolean> =>
   merge(
     keyDown$.pipe(
-      tap(console.log),
       filter(filterKey(key)),
       mapTo(true),
     ),
@@ -57,13 +55,13 @@ export const opposingValues = (
     debounceTime(0),
   );
 
-interface PlayerControls {
+export interface PlayerControls {
   throttling$: Observable<boolean>;
   yaw$: Observable<number>;
   fire$: Observable<boolean>;
 }
 
-interface PlayerControlKeys {
+export interface PlayerControlKeys {
   throttlingKey: string;
   yawLeftKey: string;
   yawRightKey: string;
