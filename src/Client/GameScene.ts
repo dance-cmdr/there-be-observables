@@ -1,4 +1,12 @@
-import { Scene, WebGLRenderer, PerspectiveCamera, PointLight, Mesh, Object3D } from 'three';
+import {
+  Scene,
+  WebGLRenderer,
+  PerspectiveCamera,
+  PointLight,
+  Mesh,
+  Object3D,
+  Vector3,
+} from 'three';
 import { starfieldFactory } from '../Graphics/Planets/Starfield/Starfield';
 import { earthMeshFactory } from '../Graphics/Planets/Earth/Planet';
 import { fromEvent, Observable, Subscription } from 'rxjs';
@@ -7,9 +15,25 @@ function getRandomCloudDirection(max: number): number {
   return Math.floor(Math.random() * Math.floor(max) - max / 2) / 10000;
 }
 
+export interface StartingPosition {
+  position: Vector3;
+  angle: Vector3;
+}
+
 export class GameScene extends Scene {
   public EARTH_RADIUS = 5;
   public CAMERA_DISTANCE = 50;
+  public PLAYER_STARTING_POSITIONS: StartingPosition[] = [
+    {
+      position: new Vector3(0, this.EARTH_RADIUS * 1.25, 0),
+      angle: new Vector3(0, 0, 0),
+    },
+    {
+      position: new Vector3(0, this.EARTH_RADIUS * 1.25 * -1, 0),
+      angle: new Vector3(0, 0, 0),
+    },
+  ];
+
   private gameElement?: Element;
   private renderer: WebGLRenderer;
   private subscriptions: Subscription[] = [];
@@ -62,12 +86,6 @@ export class GameScene extends Scene {
       return 0;
     }
     return this.gameElement.clientHeight;
-  }
-
-  public addPlayer(object: Object3D): this {
-    object.position.y = this.EARTH_RADIUS * 1.25;
-    this.add(object);
-    return this;
   }
 
   private setupCamera(): void {

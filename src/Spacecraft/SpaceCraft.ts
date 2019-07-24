@@ -5,21 +5,27 @@ import { acceleration, gAcceleration } from '../Physics/physics';
 import { directionOfAFromB, orientation } from '../Physics/trigonometry';
 
 const EARTH = new Vector3(0, 0, 0);
+var idCount = -1;
 
 interface SpaceCraftConfig {
+  id: number;
   WORLD_SCALE: number;
   throttling$: Observable<boolean>;
   yaw$: Observable<number>;
   gameClock$: Observable<number>;
   enginePower: number;
   mass: number;
-  rocket: Object3D;
+  model: Object3D;
   initialVelocity: Vector3;
-  velocity$?: Observable<Vector3>;
-  position$?: Observable<Vector3>;
 }
 
-export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
+export interface SpaceCraft {
+  id: number;
+  velocity$?: Observable<Vector3>;
+  model: Object3D;
+}
+
+export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraft {
   const acceleration$: Observable<Vector3> = config.throttling$.pipe(
     map(
       (throttles): Vector3 => {
@@ -27,7 +33,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
           return acceleration(
             config.mass,
             config.enginePower / config.WORLD_SCALE,
-            orientation(config.rocket.up, config.rocket.rotation),
+            orientation(config.model.up, config.model.rotation),
           );
         }
         return new Vector3(0, 0, 0);
@@ -47,7 +53,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
           .add(acceleration)
           .add(
             gAcceleration(
-              directionOfAFromB(config.rocket.position, EARTH),
+              directionOfAFromB(config.model.position, EARTH),
               config.mass,
             ).divideScalar(config.WORLD_SCALE),
           ),
@@ -58,7 +64,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
 
   velocity$.subscribe(
     (velocity: Vector3): void => {
-      config.rocket.position.add(velocity);
+      config.model.position.add(velocity);
     },
   );
 
@@ -70,12 +76,13 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraftConfig {
 
   spinVelocity$.subscribe(
     (spinVelocity: number): void => {
-      config.rocket.rotateZ(spinVelocity);
+      config.model.rotateZ(spinVelocity);
     },
   );
 
   return {
-    ...config,
     velocity$,
+    id: config.id,
+    model: config.model,
   };
 }

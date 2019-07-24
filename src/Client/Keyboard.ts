@@ -8,18 +8,20 @@ import {
   startWith,
   withLatestFrom,
   throttleTime,
+  tap,
 } from 'rxjs/operators';
 
 const keyDown$ = fromEvent(window, 'keydown');
 const keyUp$ = fromEvent(window, 'keyup');
 
 const filterKey = (value: string): (({  }: KeyboardEvent) => boolean) => ({
-  key,
-}: KeyboardEvent): boolean => key === value;
+  code,
+}: KeyboardEvent): boolean => code === value;
 
 export const keyPressed = (key: string): Observable<boolean> =>
   merge(
     keyDown$.pipe(
+      tap(console.log),
       filter(filterKey(key)),
       mapTo(true),
     ),
