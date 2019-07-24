@@ -8,12 +8,12 @@ import { Vector3, ObjectLoader, Group, Object3D } from 'three';
 import { spaceObjectFactory } from './Spacecraft/SpaceObject';
 
 import rocketModel from './Graphics/Rocket/model.json';
-import projectileModel from './Graphics/Projectile/icosahedron.json';
 
 import { WORLD_SCALE } from './Physics/constants';
 import { acceleration } from './Physics/physics';
 import { orientation } from './Physics/trigonometry';
 import { collitionDetection, COLLISION_TYPES } from './CollisionDetection';
+import { createProjectile, initialiseProjectiles, destroyProjectileWithIndex } from './Projectiles';
 
 const ROCKET_SIZE = 0.1;
 const FPS = 100;
@@ -81,65 +81,11 @@ const playerInterfaces = [
 
 // Model Loaders
 const rocketLoader = new ObjectLoader();
-const projectileLoader = new ObjectLoader();
 
-//
 const playerObjects = [
   playerObjectFactory(rocketLoader.parse(rocketModel)),
   playerObjectFactory(rocketLoader.parse(rocketModel)),
 ];
-
-/**
- * Projectiles
- */
-
-const PROJECTILES_LENGTH = 1000;
-const projectile = projectileLoader.parse(projectileModel);
-const projectiles: Object3D[] = new Array(PROJECTILES_LENGTH);
-const activeProjectiles: Map<number, Object3D> = new Map();
-
-for (let i = 0; i < PROJECTILES_LENGTH; i++) {
-  const prj = projectile.clone(false);
-  projectiles[i] = prj;
-  prj.visible = false;
-  prj.userData.index = i;
-  gameScene.add(prj);
-}
-let cp = 0;
-
-const destroyProjectileWithIndex = (index: number): void => {
-  const projectile = projectiles[index];
-  projectile.visible = false;
-  if (projectile.userData.spaceObject) {
-    projectile.userData.spaceObject.dispose();
-  }
-  activeProjectiles.delete(index);
-};
-
-const createProjectile = (originator: Object3D, velocity: Vector3 = new Vector3(0, 0, 0)): void => {
-  const prj = projectiles[cp];
-  prj.userData.spaceObject = spaceObjectFactory({
-    gameClock$,
-    model: prj,
-    velocity: acceleration(
-      1,
-      1000000 / WORLD_SCALE,
-      orientation(originator.up, originator.rotation),
-    ).add(velocity),
-    position: originator.position.clone().add(orientation(originator.up, originator.rotation)),
-    mass: 1000,
-  });
-
-  prj.visible = true;
-
-  activeProjectiles.set(cp, prj);
-
-  cp++;
-
-  if (cp > projectiles.length - 1) {
-    cp = 0;
-  }
-};
 
 /**
  * Initialise SpaceCraft
@@ -162,7 +108,7 @@ const spaceCrafts = playerObjects.map((playerObject, index) => {
 
   fire$
     .pipe(withLatestFrom(spaceCraft.velocity$))
-    .subscribe(([_, velocity]) => createProjectile(playerObject, velocity));
+    .subscribe(([_, velocity]) => createProjectile(gameClock$, playerObject, velocity));
 
   // initialise
   gameScene.add(spaceCraft.model);
@@ -170,6 +116,12 @@ const spaceCrafts = playerObjects.map((playerObject, index) => {
 
   return spaceCraft;
 });
+
+/**
+ * Projectiles
+ */
+
+const { activeProjectiles } = initialiseProjectiles(gameScene);
 
 /**
  * Collision Detection
