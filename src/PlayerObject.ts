@@ -8,7 +8,6 @@ export const playerObjectFactory = (model: Object3D, scale: number, color?: numb
 
   if (color) {
     for (let i = 0; i < 4; i++) {
-      console.log(model.children[i]);
       // @ts-ignore
       model.children[i].material.color.setHex(color);
     }
