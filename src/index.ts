@@ -1,6 +1,16 @@
 import { GameScene } from './Client/GameScene';
-import { interval, fromEvent, animationFrameScheduler } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { interval, fromEvent, animationFrameScheduler, of, from } from 'rxjs';
+import {
+  map,
+  filter,
+  concatMap,
+  tap,
+  delay,
+  mergeMap,
+  exhaustMap,
+  debounceTime,
+  multicast,
+} from 'rxjs/operators';
 import { spaceCraftDestroyed, prepareSpawnSpaceCraftWithId } from './Spacecraft/SpaceCraft';
 import { ObjectLoader } from 'three';
 
@@ -16,6 +26,7 @@ import {
   PLAYER_STARTING_POSITIONS,
 } from './Game/constants';
 import { playerControls } from './Client/PlayerControls';
+import { scoreBoard } from './Game/ScoreKeeping';
 
 const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
 
@@ -68,14 +79,17 @@ collisions$
     collisions.forEach(({ index }) => destroyProjectileWithIndex(index));
   });
 
-collisions$
-  .pipe(
-    map(collisions => collisions.filter(({ type }) => type === COLLISION_TYPES.PLAYER)),
-    filter(collidingIndeces => !!collidingIndeces.length),
-  )
-  .subscribe(collisions => {
-    collisions.forEach(({ index, spaceCraft }) => {
-      destroyProjectileWithIndex(index);
-      spaceCraftDestroyed(spaceCraft, spawnSpaceCraftWithId, spaceCrafts);
-    });
-  });
+const playerCollision$ = collisions$.pipe(
+  exhaustMap(collisions => from(collisions)),
+  filter(({ type }) => type === COLLISION_TYPES.PLAYER),
+  filter(({ spaceCraft }) => spaceCraft && spaceCraft.model.visible),
+);
+
+const deaths$ = playerCollision$.pipe(map(({ spaceCraft }) => spaceCraft));
+
+scoreBoard(document, spaceCrafts, deaths$);
+
+playerCollision$.subscribe(({ index, spaceCraft }) => {
+  destroyProjectileWithIndex(index);
+  spaceCraftDestroyed(spaceCraft, spawnSpaceCraftWithId, spaceCrafts);
+});
