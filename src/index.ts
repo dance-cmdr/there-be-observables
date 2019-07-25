@@ -28,7 +28,7 @@ const rocketLoader = new ObjectLoader();
 
 const PLAYER_OBJECTS = [
   playerObjectFactory(rocketLoader.parse(rocketModel), PLAYER_OBJECT_SCALE),
-  playerObjectFactory(rocketLoader.parse(rocketModel), PLAYER_OBJECT_SCALE),
+  playerObjectFactory(rocketLoader.parse(rocketModel), PLAYER_OBJECT_SCALE, 0xff0000),
 ];
 
 gameScene.add(...PLAYER_OBJECTS);
