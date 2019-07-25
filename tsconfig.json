@@ -20,7 +20,8 @@
         "./src/**/*.ts"
     ],
     "exclude": [
-        "**/*.spec.ts",
-        "./node_modules/**"
+        "node_modules",
+        "test",
+        "**/*.spec.ts"  
     ]
 }

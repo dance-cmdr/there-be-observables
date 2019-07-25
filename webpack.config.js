@@ -36,7 +36,18 @@ module.exports = {
           },
         ],
       },
-      { test: /\.tsx?$/, loader: 'ts-loader' },
+      {
+        test: /.tsx?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              happyPackMode: true,
+              configFile: __dirname + '/tsconfig.json',
+            },
+          },
+        ],
+      },
     ],
   },
   plugins: [
