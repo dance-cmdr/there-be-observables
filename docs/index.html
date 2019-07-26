@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>There be observables!</title>
+        <style>
+        * {
+            padding: 0;
+            margin: 0;
+        } 
+        body {
+            background-color: #000;
+            color: #fff;
+            min-width: 100%;
+            min-height: 100%;
+        }
+        #game {
+            width: calc(100vw - 10px);
+            height: calc(100vh - 10px);
+            border: 5px #fff solid;
+        }
+        #overlay {
+            width: calc(100vw - 50px);
+            height: calc(100vh - 50px);
+            position: fixed;
+            padding: 25px;
+            font-family: monospace;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .player {
+
+        }
+
+        .player-0 {
+            color: yellow;
+        }
+
+        .player-1 {
+            color: red;
+        }
+
+        .score {
+            text-align: center;
+        }
+
+        .flex-grid {
+            display: flex;
+        }
+
+        .col {
+            flex: 0 0 auto;
+        }
+
+        .middle {
+            flex:1 1 auto;
+        }
+
+        </style>
+    </head>
+    <body>
+        <div id="overlay" class="flex-grid">
+            <div class="player player-0 col">
+                <div>Player</div>
+                <div class="score"> 0 </div>
+            </div> 
+            <div class=" middle">
+                
+            </div>
+            <div class="player player-1 col">
+                <div>Player</div>
+                <div class="score"> 0 </div>
+            </div> 
+        </div>
+        <div id="game"></div>
+        
+        <script src="./bundle.js"></script>
+    </body>
+</html>
