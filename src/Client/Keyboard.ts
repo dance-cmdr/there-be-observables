@@ -43,11 +43,11 @@ export const opposingValues = (
 ): Observable<number> =>
   combineLatest(
     negative$.pipe(
-      map((value): number => (value ? 1 : 0)),
+      map((value): number => (value ? -1 : 0)),
       startWith(0),
     ),
     positive$.pipe(
-      map((value): number => (value ? -1 : 0)),
+      map((value): number => (value ? 1 : 0)),
       startWith(0),
     ),
   ).pipe(
@@ -71,6 +71,6 @@ export interface PlayerControlKeys {
 
 export const playerInterface = (keys: PlayerControlKeys): PlayerControls => ({
   throttling$: keyPressed(keys.throttlingKey),
-  yaw$: opposingValues(keyPressed(keys.yawLeftKey), keyPressed(keys.yawRightKey)),
+  yaw$: opposingValues(keyPressed(keys.yawRightKey), keyPressed(keys.yawLeftKey)),
   fire$: keyHold(keys.gameClock$, keys.fireKey),
 });

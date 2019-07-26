@@ -68,20 +68,16 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraft {
   const spinVelocity$: Observable<number> = config.gameClock$.pipe(
     withLatestFrom(config.yaw$),
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    map(([_, yaw]): number => yaw / 50),
+    map(([_, yaw]): number => yaw / 40),
   );
 
   const subscriptions = [
-    velocity$.subscribe(
-      (velocity: Vector3): void => {
-        config.model.position.add(velocity);
-      },
-    ),
-    spinVelocity$.subscribe(
-      (spinVelocity: number): void => {
-        config.model.rotateZ(spinVelocity);
-      },
-    ),
+    velocity$.subscribe((velocity: Vector3): void => {
+      config.model.position.add(velocity);
+    }),
+    spinVelocity$.subscribe((spinVelocity: number): void => {
+      config.model.rotateZ(spinVelocity);
+    }),
   ];
 
   return {
