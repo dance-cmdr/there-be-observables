@@ -1,10 +1,8 @@
 import { fromEvent, merge, Observable, combineLatest } from 'rxjs';
 import {
   filter,
-  mapTo,
   distinctUntilChanged,
   map,
-  debounceTime,
   startWith,
   withLatestFrom,
   throttleTime,
@@ -21,11 +19,11 @@ export const keyPressed = (key: string): Observable<boolean> =>
   merge(
     keyDown$.pipe(
       filter(filterKey(key)),
-      mapTo(true),
+      map(() => true),
     ),
     keyUp$.pipe(
       filter(filterKey(key)),
-      mapTo(false),
+      map(() => false),
     ),
   ).pipe(distinctUntilChanged());
 
@@ -41,7 +39,7 @@ export const opposingValues = (
   negative$: Observable<boolean>,
   positive$: Observable<boolean>,
 ): Observable<number> =>
-  combineLatest(
+  combineLatest([
     negative$.pipe(
       map((value): number => (value ? -1 : 0)),
       startWith(0),
@@ -50,9 +48,9 @@ export const opposingValues = (
       map((value): number => (value ? 1 : 0)),
       startWith(0),
     ),
-  ).pipe(
+  ]).pipe(
     map(([negative, positive]): number => negative + positive),
-    debounceTime(0),
+    distinctUntilChanged(),
   );
 
 export interface PlayerControls {
