@@ -48,7 +48,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraft {
 
   const velocity$: Observable<Vector3> = config.gameClock$.pipe(
     withLatestFrom(acceleration$),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     map(([_, acceleration]): Vector3 => acceleration),
     scan(
       (velocity, acceleration): Vector3 =>
@@ -67,7 +67,7 @@ export function spaceCraftFactory(config: SpaceCraftConfig): SpaceCraft {
   );
   const spinVelocity$: Observable<number> = config.gameClock$.pipe(
     withLatestFrom(config.yaw$),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     map(([_, yaw]): number => yaw / 40),
   );
 
@@ -133,7 +133,7 @@ export const spawnSpaceCraft = (
   spaceCraft.subscriptions.push(
     fire$
       .pipe(withLatestFrom(spaceCraft.velocity$))
-      .subscribe(([_, velocity]) => createProjectile(gameClock$, model, velocity)),
+      .subscribe(([, velocity]) => createProjectile(gameClock$, model, velocity)),
   );
 
   setObjectPositon(spaceCraft.model, startingPosition);

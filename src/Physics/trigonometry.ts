@@ -1,5 +1,4 @@
 import { Vector3, Euler } from 'three';
-import { G } from './constants';
 
 export function orientation(up: Vector3, rotation: Euler): Vector3 {
   return up.clone().applyEuler(rotation);

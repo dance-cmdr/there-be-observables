@@ -72,8 +72,8 @@ export const athmoshpereCloudsFactory = (
 
 export const athmoshpereFactory = (
   planetRadius: number,
-  atmoshpereMap: string,
-  atmoshpereTransMap: string,
+  _atmoshpereMap: string,
+  _atmoshpereTransMap: string,
 ): Mesh => {
   const geometry = new SphereGeometry(planetRadius * 1.04, 32, 32);
   const material = new MeshPhongMaterial({

@@ -40,7 +40,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "node scripts/sync-agent-files.cjs && npm run lint && npm test",
+      "pre-commit": "node scripts/sync-agent-files.cjs && npm run lint:fix && git add -u && npm test",
       "pre-push": "npm run lint && npm test"
     }
   }

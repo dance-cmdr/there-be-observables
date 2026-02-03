@@ -1,4 +1,4 @@
-import { Group, Object3D, MeshPhongMaterial, Color, Mesh, Material } from 'three';
+import { Group, Object3D } from 'three';
 
 export const playerObjectFactory = (model: Object3D, scale: number, color?: number): Object3D => {
   const object = new Group();

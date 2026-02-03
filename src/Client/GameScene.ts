@@ -6,7 +6,6 @@ import {
   AmbientLight,
   Mesh,
   Object3D,
-  Vector3,
 } from 'three';
 import { starfieldFactory } from '../Graphics/Planets/Starfield/Starfield';
 import { earthMeshFactory } from '../Graphics/Planets/Earth/Planet';

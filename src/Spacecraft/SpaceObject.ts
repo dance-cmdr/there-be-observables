@@ -35,7 +35,7 @@ export const spaceObjectFactory = ({
 
   const position$: Observable<Vector3> = gameClock$.pipe(
     withLatestFrom(velocity$),
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     map(([_, velocity]) => {
       return model.position.clone().add(velocity);
     }),
