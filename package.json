@@ -12,7 +12,8 @@
     "test:coverage": "jest --coverage",
     "lint": "./node_modules/.bin/eslint",
     "build": "webpack",
-    "start": "webpack-dev-server --color"
+    "start": "webpack-dev-server --color",
+    "sync-agents": "node scripts/sync-agent-files.js"
   },
   "author": "dance-cmdr",
   "license": "ISC",
@@ -51,7 +52,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm test",
+      "pre-commit": "node scripts/sync-agent-files.js && npm run lint && npm test",
       "pre-push": "npm run lint && npm test"
     }
   }
