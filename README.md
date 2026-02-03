@@ -43,6 +43,46 @@ This codebase deliberately explores these boundaries:
 
 ## Architecture
 
+```mermaid
+flowchart TD
+    subgraph input [Input Layer]
+        KC[Keyboard Controls]
+        WR[Window Resize]
+    end
+    
+    subgraph core [Game Core]
+        GC[Game Clock 60fps]
+        PS[Physics System]
+        CD[Collision Detection]
+    end
+    
+    subgraph entities [Game Entities]
+        SC[SpaceCraft x2]
+        PR[Projectiles Pool]
+        EA[Earth + Atmosphere]
+    end
+    
+    subgraph render [Rendering]
+        GS[GameScene]
+        WGL[WebGL Renderer]
+    end
+    
+    KC --> GC
+    WR --> GS
+    GC --> PS
+    GC --> CD
+    PS --> SC
+    PS --> PR
+    CD --> SC
+    CD --> PR
+    SC --> GS
+    PR --> GS
+    EA --> GS
+    GS --> WGL
+```
+
+### Directory Structure
+
 ```
 src/
 ├── index.ts                 # Entry point, wires everything together
@@ -82,19 +122,20 @@ src/
 
 | Package | Version | Status |
 |---------|---------|--------|
-| RxJS | 6.4.0 | Outdated (current: ~7.8) |
-| Three.js | 0.103.0 | Outdated (current: ~0.160) |
-| TypeScript | 3.4.1 | Outdated (current: ~5.x) |
-| Webpack | 4.29.6 | Outdated (current: ~5.x) |
-| Jest | 24.7.1 | Outdated (current: ~29.x) |
+| RxJS | 7.8.0 | Current |
+| Three.js | 0.170.0 | Current |
+| TypeScript | 5.3.0 | Current |
+| Vite | 5.x | Current |
+| Vitest | 2.x | Current |
+| ESLint | 9.x | Current |
 
-See `docs/adr/002-modernization-plan.md` for upgrade roadmap.
+See `docs/adr/` for architecture decisions and modernization history.
 
 ## Development
 
 ### Prerequisites
 
-- Node.js (v12+ recommended for legacy compatibility)
+- Node.js (v18+ recommended)
 - npm
 
 ### Install
@@ -106,10 +147,10 @@ npm install
 ### Run Development Server
 
 ```bash
-npm start
+npm run dev
 ```
 
-Opens at http://localhost:8080
+Opens at http://localhost:8080 (or next available port)
 
 ### Build
 
@@ -129,6 +170,7 @@ npm test
 
 ```bash
 npm run lint
+npm run lint:fix  # Auto-fix issues
 ```
 
 ## CI/CD
