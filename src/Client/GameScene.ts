@@ -132,7 +132,7 @@ export class GameScene extends Scene {
     if (this.earth !== null) {
       return this.earth.children[0];
     }
-    null;
+    return null;
   }
 
   private animation(frame: number): void {

@@ -43,7 +43,7 @@ export const collitionDetection = (
       // Raycast for collisions and return if the current projectile collides
       const collisionsList: Collision[] = [];
 
-      for (let [index, object] of activeProjectiles.entries()) {
+      for (const [index, object] of activeProjectiles.entries()) {
         // projectile to earth collision
         if (detectCollision(EARTH, object, EARTH.geometry.boundingSphere.radius)) {
           collisionsList.push({

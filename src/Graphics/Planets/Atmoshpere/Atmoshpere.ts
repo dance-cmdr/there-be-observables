@@ -6,38 +6,42 @@ export const athmoshpereCloudsFactory = (
   atmoshpereTransMap: string,
 ): Mesh => {
   // create destination canvas
-  var canvasResult = document.createElement('canvas');
+  const canvasResult = document.createElement('canvas');
   canvasResult.width = 1024;
   canvasResult.height = 512;
-  var contextResult = canvasResult.getContext('2d');
+  const contextResult = canvasResult.getContext('2d');
+
+  // Declare material early so it can be referenced in async callbacks
+  // eslint-disable-next-line prefer-const
+  let material: MeshPhongMaterial;
 
   // load earthcloudmap
-  var imageMap = new Image();
+  const imageMap = new Image();
   imageMap.addEventListener(
     'load',
     function(): void {
       // create dataMap ImageData for earthcloudmap
-      var canvasMap = document.createElement('canvas');
+      const canvasMap = document.createElement('canvas');
       canvasMap.width = imageMap.width;
       canvasMap.height = imageMap.height;
-      var contextMap = canvasMap.getContext('2d');
+      const contextMap = canvasMap.getContext('2d');
       contextMap.drawImage(imageMap, 0, 0);
-      var dataMap = contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height);
+      const dataMap = contextMap.getImageData(0, 0, canvasMap.width, canvasMap.height);
 
       // load earthcloudmaptrans
-      var imageTrans = new Image();
+      const imageTrans = new Image();
       imageTrans.addEventListener('load', function(): void {
         // create dataTrans ImageData for earthcloudmaptrans
-        var canvasTrans = document.createElement('canvas');
+        const canvasTrans = document.createElement('canvas');
         canvasTrans.width = imageTrans.width;
         canvasTrans.height = imageTrans.height;
-        var contextTrans = canvasTrans.getContext('2d');
+        const contextTrans = canvasTrans.getContext('2d');
         contextTrans.drawImage(imageTrans, 0, 0);
-        var dataTrans = contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height);
+        const dataTrans = contextTrans.getImageData(0, 0, canvasTrans.width, canvasTrans.height);
         // merge dataMap + dataTrans into dataResult
-        var dataResult = contextMap.createImageData(canvasMap.width, canvasMap.height);
-        for (var y = 0, offset = 0; y < imageMap.height; y++) {
-          for (var x = 0; x < imageMap.width; x++, offset += 4) {
+        const dataResult = contextMap.createImageData(canvasMap.width, canvasMap.height);
+        for (let y = 0, offset = 0; y < imageMap.height; y++) {
+          for (let x = 0; x < imageMap.width; x++, offset += 4) {
             dataResult.data[offset + 0] = dataMap.data[offset + 0];
             dataResult.data[offset + 1] = dataMap.data[offset + 1];
             dataResult.data[offset + 2] = dataMap.data[offset + 2];
@@ -54,14 +58,14 @@ export const athmoshpereCloudsFactory = (
   );
   imageMap.src = atmoshpereMap;
 
-  var geometry = new SphereGeometry(planetRadius * 1.03, 32, 32);
-  var material = new MeshPhongMaterial({
+  const geometry = new SphereGeometry(planetRadius * 1.03, 32, 32);
+  material = new MeshPhongMaterial({
     map: new Texture(canvasResult),
     side: DoubleSide,
     transparent: true,
     opacity: 0.9,
   });
-  var mesh = new Mesh(geometry, material);
+  const mesh = new Mesh(geometry, material);
 
   return mesh;
 };
@@ -71,8 +75,8 @@ export const athmoshpereFactory = (
   atmoshpereMap: string,
   atmoshpereTransMap: string,
 ): Mesh => {
-  var geometry = new SphereGeometry(planetRadius * 1.04, 32, 32);
-  var material = new MeshPhongMaterial({
+  const geometry = new SphereGeometry(planetRadius * 1.04, 32, 32);
+  const material = new MeshPhongMaterial({
     side: DoubleSide,
     transparent: true,
     opacity: 0.1,

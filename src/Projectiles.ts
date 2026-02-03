@@ -17,7 +17,7 @@ const PROJECTILES_LENGTH = 1000;
 const projectile = projectileLoader.parse(projectileModel);
 const projectiles: Object3D[] = new Array(PROJECTILES_LENGTH);
 const activeProjectiles: Map<number, Object3D> = new Map();
-var cp = 0;
+let cp = 0;
 
 export const initialiseProjectiles = (
   gameScene: GameScene,

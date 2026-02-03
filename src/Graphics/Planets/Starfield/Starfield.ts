@@ -4,9 +4,9 @@ import starField from './starfield.jpg';
 
 export const starfieldFactory = (radius: number = 5): Mesh => {
   // create the geometry sphere
-  var geometry = new SphereGeometry(radius, 32, 32);
+  const geometry = new SphereGeometry(radius, 32, 32);
   // create the material, using a texture of startfield
-  var material = new MeshBasicMaterial();
+  const material = new MeshBasicMaterial();
   material.map = ImageUtils.loadTexture(starField);
   material.side = BackSide;
   // create the mesh based on geometry and material

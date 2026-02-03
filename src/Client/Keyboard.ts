@@ -13,7 +13,7 @@ import {
 const keyDown$ = fromEvent(window, 'keydown');
 const keyUp$ = fromEvent(window, 'keyup');
 
-const filterKey = (value: string): (({  }: KeyboardEvent) => boolean) => ({
+const filterKey = (value: string): ((event: KeyboardEvent) => boolean) => ({
   code,
 }: KeyboardEvent): boolean => code === value;
 
