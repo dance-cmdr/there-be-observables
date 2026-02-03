@@ -3,6 +3,7 @@ import {
   WebGLRenderer,
   PerspectiveCamera,
   PointLight,
+  AmbientLight,
   Mesh,
   Object3D,
   Vector3,
@@ -85,8 +86,14 @@ export class GameScene extends Scene {
   }
 
   private setupLight(): void {
-    const pLight = new PointLight(0xffffff, 1, 10000, 2);
-    pLight.position.set(1000, 5, 1000);
+    // Ambient light for base illumination
+    const ambientLight = new AmbientLight(0xffffff, 0.15);
+    this.add(ambientLight);
+
+    // Point light positioned relative to scene scale (EARTH_RADIUS = 5)
+    // Using decay: 0 for consistent illumination regardless of distance
+    const pLight = new PointLight(0xffffff, 1, 0, 0);
+    pLight.position.set(this.CAMERA_DISTANCE * 0.5, 5, this.CAMERA_DISTANCE * 0.5);
     this.add(pLight);
   }
 

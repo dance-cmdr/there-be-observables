@@ -7,7 +7,7 @@
 	"geometries": [
 		{
 			"uuid": "153B4675-C62C-48EB-AC50-93BEA5D9D987",
-			"type": "IcosahedronBufferGeometry",
+			"type": "IcosahedronGeometry",
 			"radius": 0.1,
 			"detail": 0
 		}],

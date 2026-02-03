@@ -13,7 +13,8 @@
     "sourceMap": true,
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": false
+    "verbatimModuleSyntax": false,
+    "types": ["vitest/globals"]
   },
   "include": ["src"],
   "exclude": ["node_modules"]
