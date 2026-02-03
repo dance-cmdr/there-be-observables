@@ -1,5 +1,5 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, TextureLoader, Color, SRGBColorSpace } from 'three';
-import { athmoshpereFactory, athmoshpereCloudsFactory } from '../Atmoshpere/Atmoshpere';
+import { atmosphereFactory, atmosphereCloudsFactory } from '../Atmosphere/Atmosphere';
 
 import earthMap from './earthmap1k.jpg';
 import earthBump from './earthbump1k.jpg';
@@ -28,8 +28,8 @@ export const earthMeshFactory = (earthRadius: number = 1): Mesh => {
   earth.rotateY(-1);
   earth.rotateZ(-0.4);
 
-  earth.add(athmoshpereCloudsFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
-  earth.add(athmoshpereFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
+  earth.add(atmosphereCloudsFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
+  earth.add(atmosphereFactory(earthRadius, earthCloudMap, earthCloudMapTrans));
 
   return earth;
 };

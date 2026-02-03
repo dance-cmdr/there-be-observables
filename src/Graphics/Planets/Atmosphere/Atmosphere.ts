@@ -1,9 +1,9 @@
 import { Mesh, SphereGeometry, MeshPhongMaterial, Texture, DoubleSide } from 'three';
 
-export const athmoshpereCloudsFactory = (
+export const atmosphereCloudsFactory = (
   planetRadius: number,
-  atmoshpereMap: string,
-  atmoshpereTransMap: string,
+  atmosphereMap: string,
+  atmosphereTransMap: string,
 ): Mesh => {
   // create destination canvas
   const canvasResult = document.createElement('canvas');
@@ -52,11 +52,11 @@ export const athmoshpereCloudsFactory = (
         contextResult.putImageData(dataResult, 0, 0);
         material.map.needsUpdate = true;
       });
-      imageTrans.src = atmoshpereTransMap;
+      imageTrans.src = atmosphereTransMap;
     },
     false,
   );
-  imageMap.src = atmoshpereMap;
+  imageMap.src = atmosphereMap;
 
   const geometry = new SphereGeometry(planetRadius * 1.03, 32, 32);
   material = new MeshPhongMaterial({
@@ -70,10 +70,10 @@ export const athmoshpereCloudsFactory = (
   return mesh;
 };
 
-export const athmoshpereFactory = (
+export const atmosphereFactory = (
   planetRadius: number,
-  _atmoshpereMap: string,
-  _atmoshpereTransMap: string,
+  _atmosphereMap: string,
+  _atmosphereTransMap: string,
 ): Mesh => {
   const geometry = new SphereGeometry(planetRadius * 1.04, 32, 32);
   const material = new MeshPhongMaterial({

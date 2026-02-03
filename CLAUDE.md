@@ -2,7 +2,7 @@
 
 > **SYNC RULE**: This file and `.cursor/rules/project.mdc` must stay in sync.
 > **CLAUDE.md is the source of truth.** If you edit this file, update `.cursor/rules/project.mdc` to match.
-> A pre-commit hook runs `scripts/sync-agent-files.js` as a backup.
+> A pre-commit hook runs `scripts/sync-agent-files.cjs` as a backup.
 
 ## Project Purpose
 
@@ -32,10 +32,11 @@ The project pushes RxJS to its limits by implementing everything as observable s
 
 ```bash
 npm install          # Install dependencies
-npm start            # Dev server at localhost:8080
+npm run dev          # Dev server at localhost:8080
 npm run build        # Production build to dist/
-npm test             # Run Jest tests
+npm test             # Run Vitest tests
 npm run lint         # ESLint check
+npm run lint:fix     # ESLint auto-fix
 ```
 
 ## Key File Locations
@@ -48,7 +49,7 @@ npm run lint         # ESLint check
 | `src/Spacecraft/SpaceCraft.ts` | `spaceCraftFactory()` - physics observables for ships |
 | `src/Spacecraft/SpaceObject.ts` | Generic position/velocity observable wrapper |
 | `src/Physics/physics.ts` | `acceleration()`, `gAcceleration()` calculations |
-| `src/CollisionDetection.ts` | `collitionDetection()` - raycaster stream |
+| `src/CollisionDetection.ts` | `collisionDetection()` - raycaster stream |
 | `src/Projectiles.ts` | Object pool with `createProjectile()`, `destroyProjectileWithIndex()` |
 
 ## Architecture Patterns
@@ -70,8 +71,8 @@ const velocity$ = gameClock$.pipe(
 ### Input Handling
 ```typescript
 const keyPressed = (key) => merge(
-  keyDown$.pipe(filter(e => e.code === key), mapTo(true)),
-  keyUp$.pipe(filter(e => e.code === key), mapTo(false))
+  keyDown$.pipe(filter(e => e.code === key), map(() => true)),
+  keyUp$.pipe(filter(e => e.code === key), map(() => false))
 ).pipe(distinctUntilChanged());
 ```
 
@@ -84,7 +85,7 @@ velocity$.subscribe(velocity => {
 
 ## Testing Approach
 
-Uses Jest with RxJS `TestScheduler` for marble testing:
+Uses Vitest with RxJS `TestScheduler` for marble testing:
 
 ```typescript
 const scheduler = new TestScheduler((a, e) => expect(a).toEqual(e));
@@ -96,30 +97,26 @@ scheduler.run(({ cold, expectObservable }) => {
 
 Test files: `*.test.ts` alongside source files.
 
-## Known Issues & Deprecations
-
-### Three.js (Critical)
-- `ImageUtils.loadTexture()` is deprecated/removed in modern Three.js
-- Located in: `src/Graphics/Planets/Earth/Planet.ts`, `src/Graphics/Planets/Starfield/Starfield.ts`
-- Fix: Use `TextureLoader` instead
+## Known Issues
 
 ### TypeScript
 - Some `@ts-ignore` comments for Three.js material access
 - Located in: `src/PlayerObject.ts`, `src/Game/ScoreKeeping.ts`
 
-### Code Style
-- Typo: `collitionDetection` should be `collisionDetection`
-- Typo: `Atmoshpere` should be `Atmosphere`
+## Tech Stack
 
-## Dependencies Status
+All dependencies are current (modernized February 2026):
 
-All dependencies are from ~2019 and significantly outdated:
-- RxJS 6.4.0 → 7.x (pipe-only operators, scheduler changes)
-- Three.js 0.103.0 → 0.160+ (major API changes)
-- TypeScript 3.4.1 → 5.x
-- Webpack 4 → 5 (asset modules)
+| Package | Version |
+|---------|---------|
+| RxJS | 7.8.0 |
+| Three.js | 0.170.0 |
+| TypeScript | 5.3.0 |
+| Vite | 5.x |
+| Vitest | 2.x |
+| ESLint | 9.x |
 
-See `docs/adr/002-modernization-plan.md` for upgrade plan.
+See `docs/adr/002-modernization-plan.md` for modernization history.
 
 ## Game Controls Reference
 

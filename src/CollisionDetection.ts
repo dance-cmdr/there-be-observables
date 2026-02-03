@@ -32,7 +32,7 @@ export const COLLISION_TYPES = {
   PLAYER: 'player',
 };
 
-export const collitionDetection = (
+export const collisionDetection = (
   gameClock$: Observable<number>,
   EARTH: Mesh,
   activeProjectiles: Map<number, Object3D>,

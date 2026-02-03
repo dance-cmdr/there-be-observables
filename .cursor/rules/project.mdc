@@ -48,8 +48,8 @@ const velocity$ = gameClock$.pipe(
 ### Input Handling
 ```typescript
 const keyPressed = (key) => merge(
-  keyDown$.pipe(filter(e => e.code === key), mapTo(true)),
-  keyUp$.pipe(filter(e => e.code === key), mapTo(false))
+  keyDown$.pipe(filter(e => e.code === key), map(() => true)),
+  keyUp$.pipe(filter(e => e.code === key), map(() => false))
 ).pipe(distinctUntilChanged());
 ```
 
@@ -62,27 +62,17 @@ velocity$.subscribe(velocity => {
 
 ## Known Technical Debt
 
-### Three.js (Critical)
-- `ImageUtils.loadTexture()` is deprecated/removed in modern Three.js
-- Located in: `src/Graphics/Planets/Earth/Planet.ts`, `src/Graphics/Planets/Starfield/Starfield.ts`
-- Fix: Use `TextureLoader` instead
 
-### TypeScript
-- Some `@ts-ignore` comments for Three.js material access
-- Located in: `src/PlayerObject.ts`, `src/Game/ScoreKeeping.ts`
-
-### Code Style
-- Typo: `collitionDetection` should be `collisionDetection`
-- Typo: `Atmoshpere` should be `Atmosphere`
 
 ## Commands
 
 ```bash
 npm install          # Install dependencies
-npm start            # Dev server at localhost:8080
+npm run dev          # Dev server at localhost:8080
 npm run build        # Production build to dist/
-npm test             # Run Jest tests
+npm test             # Run Vitest tests
 npm run lint         # ESLint check
+npm run lint:fix     # ESLint auto-fix
 ```
 
 ---

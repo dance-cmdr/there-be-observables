@@ -2,131 +2,100 @@
 
 ## Status
 
-Proposed
+**Completed** - February 2026
+
+## Summary
+
+All dependencies were successfully modernized from 2019-era versions to current releases. The experimental reactive architecture was preserved throughout.
+
+### Final State
+
+| Package | Before | After |
+|---------|--------|-------|
+| RxJS | 6.4.0 | 7.8.0 |
+| Three.js | 0.103.0 | 0.170.0 |
+| TypeScript | 3.4.1 | 5.3.0 |
+| Build Tool | Webpack 4.29.6 | Vite 5.x |
+| Test Framework | Jest 24.7.1 | Vitest 2.x |
+| ESLint | 5.16.0 | 9.x |
+| Prettier | 1.16.4 | 3.x |
 
 ## Context
 
-The codebase was created in 2019 and all dependencies are significantly outdated. This ADR documents the upgrade path while preserving the experimental reactive architecture.
-
-## Current State
-
-| Package | Current | Latest | Years Behind |
-|---------|---------|--------|--------------|
-| rxjs | 6.4.0 | ~7.8 | 4+ years |
-| three | 0.103.0 | ~0.160 | 5+ years |
-| typescript | 3.4.1 | ~5.3 | 4+ years |
-| webpack | 4.29.6 | ~5.89 | 4+ years |
-| jest | 24.7.1 | ~29.7 | 4+ years |
-| eslint | 5.16.0 | ~8.56 | 4+ years |
-| @babel/core | 7.4.3 | ~7.23 | 4+ years |
+The codebase was created in 2019 and all dependencies were significantly outdated. This ADR documents the upgrade path that was followed while preserving the experimental reactive architecture.
 
 ## Decision
 
-Modernize in phases, ordered by dependency chain and risk:
+Modernization was completed in phases, ordered by dependency chain and risk:
 
-### Phase 1: Foundation (Low Risk)
+### Phase 1: Build Tooling Migration
 
-**TypeScript 3.4 → 5.x**
-- Update `tsconfig.json` for stricter checks
-- Fix any new type errors
-- Enable modern features (`satisfies`, `const` type parameters)
+**Webpack 4 → Vite 5**
+- Replaced Webpack with Vite for faster development experience
+- Moved `index.html` to project root
+- Updated asset imports to use ES modules
+- JSON model files required `?raw` imports with manual parsing
 
-**ESLint 5 → 8.x**
-- Migrate to flat config format
-- Update `@typescript-eslint` packages
-- Remove deprecated `prettier/@typescript-eslint` extends
+**Jest → Vitest**
+- Migrated test configuration to Vitest
+- Configured `jsdom` environment for DOM-dependent tests
+- RxJS `TestScheduler` works with Vitest
 
-**Prettier 1 → 3.x**
-- Minor config changes
-- Reformat codebase
+### Phase 2: TypeScript & Linting
 
-### Phase 2: Build Tooling (Medium Risk)
+**TypeScript 3.4 → 5.3**
+- Updated `tsconfig.json` for modern module resolution
+- Fixed type errors from stricter checks
 
-**Webpack 4 → 5.x**
-- Replace `file-loader`, `url-loader` with asset modules
-- Update `copy-webpack-plugin` syntax
-- Configure `resolve.fullySpecified` for ESM
+**ESLint 5 → 9**
+- Migrated to flat config format (`eslint.config.js`)
+- Configured to ignore underscore-prefixed unused variables
 
-**Jest 24 → 29.x**
-- Update config format
-- Verify RxJS TestScheduler compatibility
-- Update `@types/jest`
+**Prettier 1 → 3**
+- Updated config to JSON format
 
-**Babel 7.4 → 7.23**
-- Generally backwards compatible
-- Update presets if needed
+### Phase 3: Three.js
 
-### Phase 3: Three.js (High Risk - Most Breaking Changes)
+**Three.js 0.103 → 0.170**
 
-**Three.js 0.103 → 0.160+**
+Breaking changes handled:
+1. `ImageUtils.loadTexture()` → `TextureLoader().load()`
+2. `*BufferGeometry` types → `*Geometry` (in JSON models)
+3. Lighting model changes (added `AmbientLight`, adjusted `PointLight`)
+4. Color space (`SRGBColorSpace` for textures)
 
-Critical breaking changes:
-1. `ImageUtils.loadTexture()` removed
-   ```typescript
-   // Before
-   material.map = ImageUtils.loadTexture(earthMap);
-   
-   // After
-   const loader = new TextureLoader();
-   material.map = loader.load(earthMap);
-   ```
-
-2. JSON model format changed
-   - May need to re-export `model.json` and `icosahedron.json`
-   - Or convert to GLTF format
-
-3. Material system updates
-   - Verify `MeshPhongMaterial` API
-   - Check `SphereGeometry` constructor
-
-4. Geometry changes
-   - `boundingSphere` may need explicit computation
-
-**Files requiring changes:**
+**Files changed:**
 - `src/Graphics/Planets/Earth/Planet.ts`
 - `src/Graphics/Planets/Starfield/Starfield.ts`
-- `src/Graphics/Planets/Atmoshpere/Atmoshpere.ts`
-- `src/index.ts` (ObjectLoader usage)
+- `src/Graphics/Rocket/model.json`
+- `src/Graphics/Projectile/icosahedron.json`
+- `src/Client/GameScene.ts`
 
-### Phase 4: RxJS (Medium Risk)
+### Phase 4: RxJS
 
-**RxJS 6.4 → 7.x**
+**RxJS 6.4 → 7.8**
 
-Changes required:
-1. Import path changes (minimal with pipeable operators)
-2. `schedulers` renamed/moved
-3. `toPromise()` deprecated → use `firstValueFrom()`, `lastValueFrom()`
-
-Most of the codebase uses pipeable operators, so migration should be smooth.
-
-**Verify:**
-- `animationFrameScheduler` behavior
-- `TestScheduler` marble testing API
+Changes made:
+1. `mapTo(value)` → `map(() => value)` (deprecated operator)
+2. `combineLatest(a, b)` → `combineLatest([a, b])` (array form)
+3. `debounceTime(0)` → `distinctUntilChanged()` (timing behavior)
+4. Removed unused imports (`multicast`, etc.)
 
 ## Consequences
 
-### Benefits
-- Security patches and bug fixes
-- Modern TypeScript features
-- Better tree-shaking with Webpack 5
-- Performance improvements in Three.js
+### Benefits Achieved
+- Fast HMR with Vite (~250ms cold start)
+- Modern TypeScript features available
+- Tree-shaking and smaller bundles
+- Current security patches
+- Better developer experience
 
-### Risks
-- Three.js upgrade is highest risk due to API changes
-- May need to regenerate 3D models
-- Potential subtle behavior changes in RxJS schedulers
+### Issues Encountered
+- Three.js JSON model geometry types had to be renamed
+- RxJS 7 `combineLatest` emits differently with `startWith` (test updates required)
+- Vite requires different handling for Three.js JSON models (`?raw` imports)
 
-### Testing Strategy
-1. Ensure all existing tests pass before each phase
+### Testing Strategy Used
+1. All existing tests passed before each phase
 2. Manual gameplay testing after Three.js upgrade
-3. Performance comparison before/after
-
-## Rollback Plan
-
-Use git branches for each phase:
-- `modernize/phase-1-foundation`
-- `modernize/phase-2-build`
-- `modernize/phase-3-threejs`
-- `modernize/phase-4-rxjs`
-
-Each phase should be a separate PR that can be reverted independently.
+3. Automated verification: `npm run lint && npm test && npm run build`

@@ -8,7 +8,7 @@ import { ObjectLoader } from 'three';
 import rocketModelRaw from './Graphics/Rocket/model.json?raw';
 const rocketModel = JSON.parse(rocketModelRaw);
 
-import { collitionDetection, COLLISION_TYPES } from './CollisionDetection';
+import { collisionDetection, COLLISION_TYPES } from './CollisionDetection';
 import { initialiseProjectiles, destroyProjectileWithIndex } from './Projectiles';
 import { playerObjectFactory } from './PlayerObject';
 import {
@@ -60,7 +60,7 @@ const { activeProjectiles } = initialiseProjectiles(gameScene);
 /**
  * Collision Detection
  */
-const collisions$ = collitionDetection(gameClock$, gameScene.earth, activeProjectiles, spaceCrafts);
+const collisions$ = collisionDetection(gameClock$, gameScene.earth, activeProjectiles, spaceCrafts);
 
 collisions$
   .pipe(
