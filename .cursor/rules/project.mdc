@@ -5,76 +5,85 @@ globs: ["**/*.ts", "**/*.tsx"]
 
 # There Be Observables - Project Rules
 
-> **SYNC RULE**: This file is derived from `CLAUDE.md` (source of truth).
-> If you edit this file, also update `CLAUDE.md`. If editing project docs, prefer editing `CLAUDE.md` first.
-> A pre-commit hook runs `scripts/sync-agent-files.js` as a backup.
-
 ## Project Context
 
-This is **an experiment in exploring reactive programming limits and SE boundaries**, not just a game. The architecture deliberately pushes RxJS to handle everything as streams.
+This is **an experiment in exploring the limits of reactive programming** and the software engineering concept of **boundaries**. It's a 2-player WebGL space battle game, but the game itself is secondary to the architectural experiment.
 
-### The Boundaries Concept
+### The Experiment
 
-"Boundaries" = the pragmatic paradigm shift where functional programming must yield to imperative mutations. The `.subscribe()` calls are boundary crossings where pure streams meet Three.js mutations.
+The project pushes RxJS to its limits by implementing everything as observable streams:
+- Game loop: `interval(1000/60, animationFrameScheduler)`
+- Physics: velocity/acceleration computed through `scan` and `withLatestFrom`
+- Input: keyboard state via merged `fromEvent` observables
+- Collisions: raycasting results flowing through reactive pipelines
+- Entity lifecycle: spawn/death via subscribe/unsubscribe
 
-**Preserve this experimental architecture** - don't "fix" the reactive approach unless specifically asked.
+### Boundaries Concept
 
-## Code Conventions
+"Boundaries" describes the pragmatic paradigm shift between functional and imperative programming. You can't stay purely functional - at some point you must mutate state.
 
-### RxJS Patterns (Follow These)
+**The `.subscribe()` calls are the boundary crossings** - where pure RxJS streams meet Three.js mutations:
+- `velocity$.subscribe(v => model.position.add(v))` 
+- `renderer.render(scene, camera)`
+- `prj.visible = true`
 
+**The experiment asks**: How far out can you push the boundary? What stays functional, what must be imperative?
+
+## Code Patterns
+
+### Game Clock Pattern
 ```typescript
-// Game clock - everything derives from this
 const gameClock$ = interval(1000 / FPS, animationFrameScheduler);
+// Everything subscribes to this - physics, rendering, collision checks
+```
 
-// Physics via scan
-velocity$.pipe(
-  scan((vel, acc) => vel.clone().add(acc), initialVelocity)
+### Physics as Stream Composition
+```typescript
+const velocity$ = gameClock$.pipe(
+  withLatestFrom(acceleration$),
+  scan((vel, acc) => vel.add(acc).add(gravity), initialVelocity)
 );
+```
 
-// Input via merged events
+### Input Handling
+```typescript
 const keyPressed = (key) => merge(
   keyDown$.pipe(filter(e => e.code === key), mapTo(true)),
   keyUp$.pipe(filter(e => e.code === key), mapTo(false))
 ).pipe(distinctUntilChanged());
 ```
 
-### Boundary Pattern (Imperative Side Effects)
-
-Keep side effects in `.subscribe()` blocks:
+### Boundary Crossing (Imperative Side Effects)
 ```typescript
-velocity$.subscribe(v => model.position.add(v)); // Boundary crossing
-```
-
-### Testing with RxJS TestScheduler
-
-```typescript
-const scheduler = new TestScheduler((a, e) => expect(a).toEqual(e));
-scheduler.run(({ cold, expectObservable }) => {
-  // Marble testing
+velocity$.subscribe(velocity => {
+  model.position.add(velocity);  // <-- THE BOUNDARY
 });
 ```
 
-## File Organization
-
-- `src/Client/` - Input handling, scene management
-- `src/Spacecraft/` - Entity factories with physics streams
-- `src/Physics/` - Pure calculation functions
-- `src/Graphics/` - Three.js mesh factories
-- `src/Game/` - Constants, scoring
-
 ## Known Technical Debt
 
-- `ImageUtils.loadTexture()` deprecated - needs `TextureLoader`
-- Typos: `collitionDetection`, `Atmoshpere`
-- `@ts-ignore` in PlayerObject.ts, ScoreKeeping.ts
-- All dependencies from 2019, significantly outdated
+### Three.js (Critical)
+- `ImageUtils.loadTexture()` is deprecated/removed in modern Three.js
+- Located in: `src/Graphics/Planets/Earth/Planet.ts`, `src/Graphics/Planets/Starfield/Starfield.ts`
+- Fix: Use `TextureLoader` instead
+
+### TypeScript
+- Some `@ts-ignore` comments for Three.js material access
+- Located in: `src/PlayerObject.ts`, `src/Game/ScoreKeeping.ts`
+
+### Code Style
+- Typo: `collitionDetection` should be `collisionDetection`
+- Typo: `Atmoshpere` should be `Atmosphere`
 
 ## Commands
 
 ```bash
-npm start    # Dev server
-npm test     # Jest tests  
-npm run lint # ESLint
-npm run build # Production build
+npm install          # Install dependencies
+npm start            # Dev server at localhost:8080
+npm run build        # Production build to dist/
+npm test             # Run Jest tests
+npm run lint         # ESLint check
 ```
+
+---
+*Auto-generated from CLAUDE.md by scripts/sync-agent-files.js*
