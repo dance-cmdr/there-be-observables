@@ -15,7 +15,8 @@ import { spaceCraftDestroyed, prepareSpawnSpaceCraftWithId } from './Spacecraft/
 import { ObjectLoader } from 'three';
 
 
-import rocketModel from './Graphics/Rocket/model.json';
+import rocketModelRaw from './Graphics/Rocket/model.json?raw';
+const rocketModel = JSON.parse(rocketModelRaw);
 
 import { collitionDetection, COLLISION_TYPES } from './CollisionDetection';
 import { initialiseProjectiles, destroyProjectileWithIndex } from './Projectiles';

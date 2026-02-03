@@ -6,7 +6,8 @@ import { acceleration } from './Physics/physics';
 
 import { WORLD_SCALE } from './Physics/constants';
 import { GameScene } from './Client/GameScene';
-import projectileModel from './Graphics/Projectile/icosahedron.json';
+import projectileModelRaw from './Graphics/Projectile/icosahedron.json?raw';
+const projectileModel = JSON.parse(projectileModelRaw);
 import { Observable } from 'rxjs';
 import { orientation } from './Physics/trigonometry';
 
